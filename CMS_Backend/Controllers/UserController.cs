@@ -1,41 +1,38 @@
-﻿using CMS.Data.Entities;
+﻿using CMS.Data;
+using CMS.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Backend.Controllers
 {
     public class UserController : Controller
     {
-        // Hàm Index: Hiển thị danh sách thành viên quản trị
+        private readonly ApplicationDbContext _context;
+
+        // Inject DbContext
+        public UserController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // Hiển thị danh sách người dùng
         public IActionResult Index()
         {
-            // 1. Tạo danh sách Người dùng giả (Mock Data)
-            var users = new List<User>
-            {
-                new User
-                {
-                    Id = 1,
-                    Username = "admin_thai",
-                    FullName = "Nguyễn Cao Thái",
-                    Role = "Administrator"
-                },
-                new User
-                {
-                    Id = 2,
-                    Username = "editor_01",
-                    FullName = "Trần Văn Biên Tập",
-                    Role = "Editor"
-                },
-                new User
-                {
-                    Id = 3,
-                    Username = "author_minh",
-                    FullName = "Lê Quang Minh",
-                    Role = "Author"
-                }
-            };
+            // Lấy dữ liệu thật từ Database
+            var users = _context.Users.ToList();
 
-            // 2. Trả về View kèm theo danh sách người dùng
             return View(users);
+        }
+
+        // Hiển thị chi tiết người dùng
+        public IActionResult Details(int id)
+        {
+            // Tìm người dùng theo Id
+            var user = _context.Users.Find(id);
+
+            if (user == null)
+                return NotFound();
+
+            return View(user);
         }
     }
 }
