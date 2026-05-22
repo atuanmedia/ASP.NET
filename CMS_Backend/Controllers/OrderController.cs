@@ -5,10 +5,12 @@ Lớp : CCQ2311E
 */
 using CMS.Data;
 using CMS.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize]
     public class OrderController : Controller
     {
         // Khai báo biến context để làm việc với Database

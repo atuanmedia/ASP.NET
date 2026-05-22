@@ -4,10 +4,12 @@ Mssv: 2123110162
 Lớp : CCQ2311E
 */
 using CMS.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS.Backend.Controllers
 {
+    [Authorize] 
     public class CategoriesProductsController : Controller
     {
         private readonly ApplicationDbContext _context;

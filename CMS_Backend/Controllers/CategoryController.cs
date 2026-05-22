@@ -5,10 +5,12 @@ Lớp : CCQ2311E
 */
 using CMS.Data;
 using CMS.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CMS_Backend.Controllers
 {
+    [Authorize] 
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
