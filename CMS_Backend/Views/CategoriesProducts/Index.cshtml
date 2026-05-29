@@ -1,26 +1,104 @@
-﻿
-@model IEnumerable<CMS.Data.Entities.CategoryProduct>
+﻿@model IEnumerable<CMS.Data.Entities.CategoryProduct>
+
 @{
     Layout = "_LayoutAdmin";
 }
-<h2 class="text-primary">DANH SÁCH CATEGORY PRODUCT</h2>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Tên danh mục</th>
-            <th>Mô tả</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.Name</td>
-                <td>@item.Description</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="container mt-4">
+
+    <!-- Tiêu đề + nút thêm -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2 class="text-primary fw-bold">
+            DANH SÁCH CATEGORY PRODUCT
+        </h2>
+
+        <a asp-action="Create" class="btn btn-success shadow-sm">
+            + Thêm mới
+        </a>
+
+    </div>
+
+    <!-- Card -->
+    <div class="card shadow border-0">
+
+        <div class="card-body">
+
+            <table class="table table-hover table-bordered align-middle">
+
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th width="80">ID</th>
+                        <th>Tên danh mục</th>
+                        <th>Mô tả</th>
+                        <th width="220">Chức năng</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td class="text-center">
+                                    @item.Id
+                                </td>
+
+                                <td>
+                                    <strong>@item.Name</strong>
+                                </td>
+
+                                <td>
+                                    @item.Description
+                                </td>
+
+                                <td class="text-center">
+
+                                    <!-- Nút sửa -->
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-warning btn-sm">
+                                        Sửa
+                                    </a>
+
+                                    <!-- Nút chi tiết -->
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-info btn-sm text-white">
+                                        Chi tiết
+                                    </a>
+
+                                    <!-- Nút xóa -->
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Bạn có chắc muốn xóa không?')">
+                                        Xóa
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                Chưa có dữ liệu category product
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

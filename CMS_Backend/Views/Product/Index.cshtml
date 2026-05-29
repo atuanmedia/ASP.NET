@@ -1,36 +1,232 @@
-﻿
-
-@model IEnumerable<CMS.Data.Entities.Product>
+﻿@model IEnumerable<CMS.Data.Entities.Product>
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Quản lý sản phẩm";
 }
 
-<h2 class="text-primary">DANH SÁCH SẢN PHẨM</h2>
+<div class="container-fluid py-2">
+    <!-- Header hệ thống -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h4 class="text-slate-800 fw-bold mb-1 text-uppercase tracking-wide">Kho hàng công nghệ</h4>
+            <p class="text-muted small m-0">Quản lý danh mục thiết bị, thông số cấu hình, giá bán và theo dõi tồn kho.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary shadow-sm px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle-fill"></i> Thêm sản phẩm mới
+        </a>
+    </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Tên sản phẩm</th>
-            <th>Mô tả</th>
-            <th>Giá</th>
-            <th>Số lượng</th>
-            <th>Hình ảnh</th>
-            <th>Danh mục</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.Name</td>
-                <td>@item.Description</td>
-                <td>@item.Price</td>
-                <td>@item.StockQuantity</td>
-                <td>@item.ImageUrl</td>
-                <td>@item.CategoryProductId</td>
-            </tr>
+    <!-- Thanh Tìm kiếm & Lọc thông minh -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="searchProduct" class="form-control border-start-0 ps-0" placeholder="Tìm tên sản phẩm, mô tả...">
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                    <select id="filterCategory" class="form-select text-secondary fw-medium">
+                        <option value="">-- Tất cả mã danh mục --</option>
+                        @foreach (var catId in Model.Select(m => m.CategoryProductId).Distinct())
+                        {
+                            <option value="CAT-@catId">Mã danh mục: @catId</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-auto ms-md-auto">
+                    <span class="badge bg-light text-dark border p-2 fs-6">Tổng mã hàng: <strong class="text-primary">@Model.Count()</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng sản phẩm chuẩn Admin UI -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="productsTable">
+                    <thead class="table-light border-bottom">
+                        <tr>
+                            <th class="ps-4" style="width: 80px;">ID</th>
+                            <th style="width: 90px;">Hình ảnh</th>
+                            <th>Thông tin sản phẩm</th>
+                            <th style="width: 140px;">Danh mục</th>
+                            <th style="width: 150px;" class="text-end">Giá bán</th>
+                            <th style="width: 130px;" class="text-center">Tồn kho</th>
+                            <th class="text-end pe-4" style="width: 160px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-box-seam display-4 d-block mb-2 text-black-50"></i>
+                                    Chưa có sản phẩm nào trong cơ sở dữ liệu kho.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <!-- ID định dạng đẹp -->
+                                    <td class="ps-4 fw-bold text-secondary">
+                                        #@item.Id.ToString("D3")
+                                    </td>
+
+                                    <!-- Render Hình ảnh thay vì hiện Text URL -->
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl" class="rounded object-fit-cover shadow-sm border" style="width: 50px; height: 50px;" alt="Product Thumb" onerror="this.src='/images/no-image.png';">
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center text-muted border" style="width: 50px; height: 50px;">
+                                                <i class="bi bi-laptop small"></i>
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <!-- Tên & Mô tả ngắn -->
+                                    <td>
+                                        <div class="fw-bold text-slate-950 text-truncate mb-0.5" style="max-width: 320px;" title="@item.Name">
+                                            @item.Name
+                                        </div>
+                                        <div class="text-muted small text-truncate" style="max-width: 320px;" title="@item.Description">
+                                            @(string.IsNullOrEmpty(item.Description) ? "Chưa có mô tả kỹ thuật." : item.Description)
+                                        </div>
+                                    </td>
+
+                                    <!-- Mã Danh mục sản phẩm -->
+                                    <td class="category-cell">
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 fw-semibold">
+                                            CAT-@item.CategoryProductId
+                                        </span>
+                                    </td>
+
+                                    <!-- Định dạng giá tiền VNĐ -->
+                                    <td class="text-end fw-bold text-slate-900">
+                                        @item.Price.ToString("#,##0") đ
+                                    </td>
+
+                                    <!-- Tồn kho (Dùng StockQuantity thực tế từ Model của bạn) -->
+                                    <td class="text-center">
+                                        @if (item.StockQuantity < 5)
+                                        {
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1.5 fw-bold animate-pulse">
+                                                <i class="bi bi-exclamation-triangle-fill me-1"></i> Gần hết (@item.StockQuantity)
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1.5 fw-semibold">
+                                                @item.StockQuantity sản phẩm
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <!-- Các nút Tác vụ quản trị -->
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group btn-group-sm shadow-sm" role="group">
+                                            <a href="/Product/Details/@item.Id" class="btn btn-white border text-dark" title="Xem cấu hình">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="/Product/Edit/@item.Id" class="btn btn-white border text-warning" title="Sửa thông tin">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a href="/Product/Delete/@item.Id" class="btn btn-white border text-danger" title="Xóa hàng mã này" onclick="return confirm('Bạn chắc chắn muốn xóa vĩnh viễn thiết bị này khỏi hệ thống kho?')">
+                                                <i class="bi bi-trash3-fill"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .text-slate-800 {
+            color: #1e293b;
         }
-    </tbody>
-</table>
+
+        .text-slate-900 {
+            color: #0f172a;
+        }
+
+        .text-slate-950 {
+            color: #020617;
+        }
+
+        .btn-white {
+            background-color: #ffffff;
+            border-color: #dee2e6;
+        }
+
+            .btn-white:hover {
+                background-color: #f8f9fa;
+            }
+
+        .mb-0\.5 {
+            margin-bottom: 0.125rem;
+        }
+
+        /* Hiệu ứng nhấp nháy nhẹ thu hút sự chú ý khi hàng sắp cháy kho */
+        @@keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Bộ lọc dữ liệu trực tiếp trên bảng bằng Client-Side JS (Tốc độ phản hồi cực nhanh)
+            function filterSystemProducts() {
+                var keyword = $("#searchProduct").val().toLowerCase();
+                var selectedCat = $("#filterCategory").val().trim();
+
+                $("#productsTable tbody tr").each(function () {
+                    var productName = $(this).find("td:nth-child(3) .fw-bold").text().toLowerCase();
+                    var productDesc = $(this).find("td:nth-child(3) .text-muted").text().toLowerCase();
+                    var productCat = $(this).find(".category-cell").text().trim();
+
+                    var matchKeyword = productName.indexOf(keyword) > -1 || productDesc.indexOf(keyword) > -1;
+                    var matchCategory = selectedCat === "" || productCat === selectedCat;
+
+                    if (matchKeyword && matchCategory) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            }
+
+            // Gắn sự kiện lắng nghe bộ gõ và sự kiện thay đổi hộp chọn danh mục
+            $("#searchProduct").on("keyup fontchange input", filterSystemProducts);
+            $("#filterCategory").on("change", filterSystemProducts);
+        });
+    </script>
+}

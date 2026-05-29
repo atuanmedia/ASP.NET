@@ -1,34 +1,200 @@
-﻿
-@model IEnumerable<CMS.Data.Entities.Customer>
+﻿@model IEnumerable<CMS.Data.Entities.Customer>
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Quản lý khách hàng";
 }
 
+<div class="container-fluid py-2">
+    <!-- Header hệ thống -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h4 class="text-slate-800 fw-bold mb-1 text-uppercase tracking-wide">Cơ sở dữ liệu khách hàng</h4>
+            <p class="text-muted small m-0">Quản lý hồ sơ tài khoản thành viên, thông tin liên lạc cá nhân và lịch sử phân hạng.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary shadow-sm px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2">
+            <i class="bi bi-person-plus-fill"></i> Thêm khách hàng mới
+        </a>
+    </div>
 
-<h2 class="text-primary">DANH SÁCH KHÁCH HÀNG</h2>
+    <!-- Thanh Tìm kiếm thông minh -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-8 col-lg-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="searchCustomer" class="form-control border-start-0 ps-0" placeholder="Tìm tên, email, số điện thoại hoặc địa chỉ...">
+                    </div>
+                </div>
+                <div class="col-auto ms-md-auto">
+                    <span class="badge bg-light text-dark border p-2 fs-6">Tổng số thành viên: <strong class="text-primary">@Model.Count()</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Họ tên</th>
-            <th>Email</th>
-            <th>Số điện thoại</th>
-            <th>Địa chỉ</th>
-            <th>Mật khẩu</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.FullName</td>
-                <td>@item.Email</td>
-                <td>@item.Phone</td>
-                <td>@item.Address</td>
-                <td>@item.Password</td>
-            </tr>
+    <!-- Bảng khách hàng chuẩn Admin UI -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="customersTable">
+                    <thead class="table-light border-bottom">
+                        <tr>
+                            <th class="ps-4" style="width: 90px;">Mã KH</th>
+                            <th>Họ và tên</th>
+                            <th>Thông tin liên hệ</th>
+                            <th>Địa chỉ thường trú</th>
+                            <th style="width: 140px;">Bảo mật</th>
+                            <th class="text-end pe-4" style="width: 160px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-people display-4 d-block mb-2 text-black-50"></i>
+                                    Chưa có dữ liệu thành viên nào đăng ký tài khoản.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr class="customer-row">
+                                    <!-- ID khách hàng định dạng đồng bộ dạng #KH0001 -->
+                                    <td class="ps-4 fw-bold text-secondary">
+                                        #KH@item.Id.ToString("D4")
+                                    </td>
+
+                                    <!-- Tên khách kèm Avatar chữ cái mặc định -->
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="avatar-circle fw-bold text-primary bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                @(string.IsNullOrEmpty(item.FullName) ? "U" : item.FullName.Substring(0, 1).ToUpper())
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-slate-950 name-field">@item.FullName</div>
+                                                <small class="text-muted">Thành viên hệ thống</small>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Cột Liên hệ trực quan, cho phép tương tác trực tiếp -->
+                                    <td>
+                                        <div class="mb-1 email-field">
+                                            <a href="mailto:@item.Email" class="text-decoration-none text-slate-900 small d-inline-flex align-items-center gap-1">
+                                                <i class="bi bi-envelope text-muted"></i> @item.Email
+                                            </a>
+                                        </div>
+                                        <div class="phone-field">
+                                            <a href="tel:@item.Phone" class="text-decoration-none text-secondary small d-inline-flex align-items-center gap-1">
+                                                <i class="bi bi-telephone text-muted"></i> @item.Phone
+                                            </a>
+                                        </div>
+                                    </td>
+
+                                    <!-- Địa chỉ hiển thị thu gọn nếu quá dài -->
+                                    <td class="address-field">
+                                        <div class="text-muted small text-truncate" style="max-width: 280px;" title="@item.Address">
+                                            @(string.IsNullOrEmpty(item.Address) ? "Chưa cập nhật địa chỉ." : item.Address)
+                                        </div>
+                                    </td>
+
+                                    <!-- Bảo mật thông tin: Không hiển thị trực tiếp chuỗi mật khẩu trần -->
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="text-muted font-monospace small tracking-widest">••••••••</span>
+                                            <span class="badge bg-light text-secondary border px-2 py-1 small fw-normal" title="Mật khẩu đã mã hóa">Hash</span>
+                                        </div>
+                                    </td>
+
+                                    <!-- Bộ nút tác vụ CRUD đồng bộ -->
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group btn-group-sm shadow-sm" role="group">
+                                            <a href="/Customer/Details/@item.Id" class="btn btn-white border text-dark" title="Xem lịch sử mua hàng">
+                                                <i class="bi bi-eye"></i> Lịch sử
+                                            </a>
+                                            <a href="/Customer/Edit/@item.Id" class="btn btn-white border text-warning" title="Chỉnh sửa hồ sơ">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a href="/Customer/Delete/@item.Id" class="btn btn-white border text-danger" title="Xóa tài khoản khách" onclick="return confirm('Hành động này sẽ xóa vĩnh viễn dữ liệu tài khoản khách hàng. Bạn chắc chắn muốn tiếp tục?')">
+                                                <i class="bi bi-trash3-fill"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .text-slate-800 {
+            color: #1e293b;
         }
-    </tbody>
-</table>
+
+        .text-slate-900 {
+            color: #0f172a;
+        }
+
+        .text-slate-950 {
+            color: #020617;
+        }
+
+        .btn-white {
+            background-color: #ffffff;
+            border-color: #dee2e6;
+        }
+
+            .btn-white:hover {
+                background-color: #f8f9fa;
+            }
+
+        .tracking-widest {
+            tracking-content: 0.25em;
+            letter-spacing: 0.15em;
+        }
+
+        .avatar-circle {
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Bộ lọc dữ liệu trực tiếp dựa trên sự kiện nhập liệu của quản trị viên
+            $("#searchCustomer").on("keyup fontchange input", function () {
+                var keyword = $(this).val().toLowerCase();
+
+                $("#customersTable tbody .customer-row").each(function () {
+                    var name = $(this).find(".name-field").text().toLowerCase();
+                    var email = $(this).find(".email-field").text().toLowerCase();
+                    var phone = $(this).find(".phone-field").text().toLowerCase();
+                    var address = $(this).find(".address-field").text().toLowerCase();
+
+                    // Nếu khớp một trong các thông tin trên thì hiển thị dòng đó ra
+                    if (name.indexOf(keyword) > -1 ||
+                        email.indexOf(keyword) > -1 ||
+                        phone.indexOf(keyword) > -1 ||
+                        address.indexOf(keyword) > -1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+        });
+    </script>
+}

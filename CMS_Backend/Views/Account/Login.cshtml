@@ -2,40 +2,132 @@
     Layout = null; // Trang đăng nhập độc lập, không dùng Layout chung
 }
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Đăng nhập hệ thống</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập hệ thống CMS</title>
+    <!-- Thêm Bootstrap 5 và Google Fonts để chữ đẹp hơn -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            background: #ffffff;
+        }
+
+        .form-control {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+
+            .form-control:focus {
+                background-color: #fff;
+                border-color: #0d6efd;
+                box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+            }
+
+        .btn-login {
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+            .btn-login:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+            }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-4">
-                <div class="card shadow border-0">
-                    <div class="card-header bg-primary text-white text-center py-3">
-                        <h5 class="mb-0">HỆ THỐNG QUẢN TRỊ CMS</h5>
+<body>
+
+    <div class="container login-container">
+        <div class="row w-100 justify-content-center">
+            <div class="col-md-5 col-lg-4">
+
+                <div class="card login-card p-4 p-sm-5">
+
+                    <!-- Phần Tiêu Đề Gọn Gàng Hơn -->
+                    <div class="text-center mb-4">
+                        <!-- Bạn có thể thay bằng thẻ <img> nếu có logo -->
+                        <div class="bg-primary text-white d-inline-block rounded-3 p-3 mb-3 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-shield-lock" viewBox="0 0 16 16">
+                                <path d="M5.333 6.138c.612-.746 1.414-1.138 2.667-1.138 1.253 0 2.055.392 2.667 1.138a.5.5 0 0 0 .766-.642C10.614 4.354 9.51 3.8 8 3.8s-2.614.554-3.433 1.558a.5.5 0 0 0 .766.642z" />
+                                <path d="M9.05 11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-.5-4.5A.5.5 0 0 0 8 6c-1.1 0-2 .9-2 2v2H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-1V8c0-1.1-.9-2-2-2z" />
+                            </svg>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-1">HỆ THỐNG CMS</h4>
+                        <p class="text-muted small">Vui lòng đăng nhập để tiếp tục</p>
                     </div>
-                    <div class="card-body p-4">
-                        <form asp-action="Login" method="post">
-                            <div class="mb-3">
-                                <label class="form-label">Tên đăng nhập</label>
-                                <input type="text" name="username" class="form-control" required />
+
+                    <!-- Form Đăng Nhập -->
+                    <form asp-action="Login" method="post">
+
+                        <!-- Tài khoản -->
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-medium">Tên đăng nhập</label>
+                            <input type="text" name="username" class="form-control" placeholder="Nhập tài khoản..." required autocomplete="username" />
+                        </div>
+
+                        <!-- Mật khẩu -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label class="form-label text-secondary small fw-medium mb-0">Mật khẩu</label>
+                                <a href="#" class="text-decoration-none small" style="font-size: 0.8rem;">Quên mật khẩu?</a>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Mật khẩu</label>
-                                <input type="password" name="password" class="form-control" required />
+                            <input type="password" name="password" class="form-control mt-1" placeholder="••••••••" required autocomplete="current-password" />
+                        </div>
+
+                        <!-- Ghi nhớ đăng nhập -->
+                        <div class="mb-4 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="rememberMe">
+                                <label class="form-check-label text-secondary small" for="rememberMe">Ghi nhớ đăng nhập</label>
                             </div>
-                            @if (ViewBag.Error != null)
-                            {
-                                <div class="alert alert-danger py-2">@ViewBag.Error</div>
-                            }
-                            <button type="submit" class="btn btn-primary w-100">ĐĂNG NHẬP</button>
-                        </form>
-                    </div>
+                        </div>
+
+                        <!-- Thông báo lỗi (nếu có) -->
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger py-2 px-3 small border-0 rounded-3 mb-3 d-flex align-items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle-fill me-2 flex-shrink-0" viewBox="0 0 16 16">
+                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                                </svg>
+                                <div>@ViewBag.Error</div>
+                            </div>
+                        }
+
+                        <!-- Nút bấm -->
+                        <button type="submit" class="btn btn-primary w-100 btn-login shadow-sm text-uppercase">Đăng nhập</button>
+                    </form>
+
                 </div>
+
+                <!-- Bản quyền phía dưới -->
+                <p class="text-center text-muted mt-4 small" style="font-size: 0.75rem;">&copy; @DateTime.Now.Year Hệ thống Quản trị CMS. All rights reserved.</p>
+
             </div>
         </div>
     </div>
+
 </body>
 </html>
-

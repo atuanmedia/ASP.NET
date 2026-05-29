@@ -3,95 +3,192 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AT_Cms Admin</title>
+    <title>@ViewData["Title"] - AT_Cms Tech Admin</title>
+    <!-- Bootstrap 5 & Icons -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <style>
-        .sidebar {
-            min-height: 100vh;
-            background-color: #212529;
-            color: white;
+        :root {
+            --sidebar-bg: #0f172a; /* Màu xanh đen đậm chất công nghệ (Slate 900) */
+            --sidebar-hover: #1e293b; /* Màu khi hover menu (Slate 800) */
+            --tech-blue: #0ea5e9; /* Màu xanh neon công nghệ làm điểm nhấn (Sky 500) */
         }
 
-            .sidebar a {
-                color: #adb5bd;
-                text-decoration: none;
-                display: block;
-                padding: 10px 20px;
+        body {
+            background-color: #f8fafc;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            min-height: 100vh;
+            background-color: var(--sidebar-bg);
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(45deg, #fff, var(--tech-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            padding: 1.5rem 1.25rem 0.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar a {
+            color: #94a3b8;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            margin: 0.2rem 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.925rem;
+            transition: all 0.2s ease;
+        }
+
+            .sidebar a i {
+                font-size: 1.1rem;
+                margin-right: 0.75rem;
             }
 
-                .sidebar a:hover {
-                    background-color: #343a40;
-                    color: white;
-                }
-
-            .sidebar .active {
-                background-color: #0d6efd;
-                color: white;
+            .sidebar a:hover {
+                background-color: var(--sidebar-hover);
+                color: #fff;
             }
+
+            /* Active State */
+            .sidebar a.active,
+            .sidebar a:focus { /* Bạn có thể dùng logic C# để add class .active tùy thuộc vào Controller */
+                background-color: rgba(14, 165, 233, 0.15);
+                color: var(--tech-blue);
+                font-weight: 600;
+            }
+
+        /* User Profile Block */
+        .user-profile-box {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 0.5rem;
+            margin: 0 0.75rem;
+        }
+
+        /* Main Content Styling */
+        main {
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .card-custom {
+            border: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+            border-radius: 0.75rem;
+        }
     </style>
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     <div class="container-fluid">
         <div class="row">
-            <nav class="col-md-3 col-lg-2 sidebar p-0">
-                <div class="p-3 text-center border-bottom border-secondary">
-                    <h4 class="text-white">AT_Cms Admin</h4>
-                    <ul class="navbar-nav ms-auto">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <span class="nav-link text-dark">
-                                    Chào, <strong>@User.FindFirst("FullName")?.Value</strong> (@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value)
-                                </span>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-outline-danger btn-sm" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
-                            </li>
-                        }
-                    </ul>
-
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 sidebar p-0 position-sticky top-0 start-0">
+                <!-- Brand Title -->
+                <div class="border-bottom border-secondary border-opacity-25 text-center">
+                    <h4 class="sidebar-brand m-0"><i class="bi bi-cpu shadow-sm"></i> TECH_CMS</h4>
                 </div>
-                <div class="mt-3">
+
+                <!-- User Info Block (Sửa lỗi chữ đen trên nền tối) -->
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="user-profile-box p-3 mt-3 border border-secondary border-opacity-10 text-center text-md-start">
+                        <div class="small text-muted mb-1">Tài khoản quản trị</div>
+                        <div class="text-white text-truncate fw-bold mb-2">
+                            <i class="bi bi-person-circle me-1 text-info"></i> @User.FindFirst("FullName")?.Value
+                        </div>
+                        <div class="badge bg-secondary bg-opacity-25 text-info mb-3 w-100 text-truncate">
+                            @User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
+                        </div>
+                        <a class="btn btn-sm btn-outline-danger w-100 py-1 m-0 justify-content-center" asp-controller="Account" asp-action="Logout">
+                            <i class="bi bi-box-arrow-right m-0 me-1"></i> Đăng xuất
+                        </a>
+                    </div>
+                }
+
+                <!-- Navigation Links -->
+                <div class="mt-2">
                     <a asp-controller="Home" asp-action="Index">
-                        <i class="bi bi-speedometer2"></i> Bảng điều khiển
+                        <i class="bi bi-grid-1x2-fill"></i> Tổng quan
                     </a>
-                    <a asp-controller="Category" asp-action="Index">
-                        <i class="bi bi-grid"></i> Quản lý Danh mục
-                    </a>
-                    <a asp-controller="Post" asp-action="Index">
-                        <i class="bi bi-file-earmark-post"></i> Quản lý Bài viết
-                    </a>
-                    <a asp-controller="User" asp-action="Index">
-                        <i class="bi bi-people"></i> Quản lý Thành viên
-                    </a>
+
+                    <div class="sidebar-menu-label">Cửa hàng & Sản phẩm</div>
                     <a asp-controller="CategoriesProducts" asp-action="Index">
-                        <i class="bi bi-grid"></i> Danh mục sản phẩm
+                        <i class="bi bi-tags-fill"></i> Danh mục sản phẩm
                     </a>
                     <a asp-controller="Product" asp-action="Index">
-                        <i class="bi bi-box-seam"></i> Sản phẩm
-                    </a>
-                    <a asp-controller="Customer" asp-action="Index">
-                        <i class="bi bi-people"></i> Khách hàng
-                    </a>
-                    <a asp-controller="Order" asp-action="Index">
-                        <i class="bi bi-grid"></i> Đơn hàng
-                    </a>
-                    <a asp-controller="OrderDetail" asp-action="Index">
-                        <i class="bi bi-grid"></i> Đơn hàng chi tiết
+                        <i class="bi bi-laptop-fill"></i> Quản lý sản phẩm
                     </a>
 
+                    <div class="sidebar-menu-label">Kinh doanh</div>
+                    <a asp-controller="Customer" asp-action="Index">
+                        <i class="bi bi-person-vcard-fill"></i> Khách hàng
+                    </a>
+                    <a asp-controller="Order" asp-action="Index">
+                        <i class="bi bi-receipt-cutoff"></i> Đơn bán hàng
+                    </a>
+                    <a asp-controller="OrderDetail" asp-action="Index">
+                        <i class="bi bi-list-check"></i> Chi tiết đơn hàng
+                    </a>
+
+                    <div class="sidebar-menu-label">Tin tức & Hệ thống</div>
+                    <a asp-controller="Category" asp-action="Index">
+                        <i class="bi bi-folder-fill"></i> Danh mục bài viết
+                    </a>
+                    <a asp-controller="Post" asp-action="Index">
+                        <i class="bi bi-newspaper"></i> Bài viết công nghệ
+                    </a>
+                    <a asp-controller="User" asp-action="Index">
+                        <i class="bi bi-shield-lock-fill"></i> Nhân sự quản trị
+                    </a>
                 </div>
             </nav>
 
-            <main class="col-md-9 col-lg-10 ms-sm-auto p-4">
+            <!-- Main Content Area -->
+            <main class="col-md-9 col-lg-10 ms-sm-auto p-4 px-md-5">
                 @RenderBody()
             </main>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Script tự động thêm class Active vào menu theo URL hiện tại -->
+    <script>
+        $(document).ready(function () {
+            var currentUrl = window.location.pathname;
+            $('.sidebar a').each(function () {
+                var href = $(this).attr('asp-controller') || $(this).attr('href');
+                if (href && currentUrl.toLowerCase().indexOf(href.toLowerCase()) !== -1 && href !== '/') {
+                    $(this).addClass('active');
+                }
+            });
+            if(currentUrl === '/' || currentUrl === '/Home/Index'){
+                $('.sidebar a[href*="Home"]').addClass('active');
+            }
+        });
+    </script>
 </body>
 </html>
