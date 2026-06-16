@@ -1,0 +1,123 @@
+/* ==========================================================================
+   FURNITURE BOUTIQUE COMPONENT STYLES
+   ========================================================================== */
+
+/* Khung thẻ sản phẩm phong cách Bắc Âu / Hiện đại */
+.furniture-card {
+    background: #ffffff;
+    border: 1px solid #eaeaea;
+    border-radius: 0px; /* Nội thất hoàng gia thường để vuông góc cứng cáp */
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    padding: 6px; /* Tạo khoảng trống để lộ đường viền trong */
+}
+/* Vẽ đường viền chỉ vàng lồng bên trong */
+.furniture-card::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    border: 1px dashed #e5d5c0; /* Đường viền đứt quãng mảnh màu vàng cát */
+    transition: all 0.4s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+/* Hiệu ứng bóng đổ và nâng khung khi Hover */
+/* Khi hover, đường viền trong biến thành nét liền và đổi màu sắc nét hơn */
+.furniture-card:hover {
+    transform: translateY(-8px);
+    border-color: #c5a880;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+}
+.furniture-card:hover::before {
+    border: 1px solid #c5a880; /* Chuyển thành nét liền sắc sảo */
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px; /* Hơi rộng ra một chút tạo hiệu ứng chuyển động */
+}
+/* Hiệu ứng phóng to ảnh mượt mà */
+.furniture-img-container {
+    position: relative;
+    overflow: hidden;
+    background-color: #fcfbfa; /* Nền ấm nhẹ tôn dáng đồ gỗ/sofa */
+}
+
+.furniture-img-container img {
+    transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.furniture-card:hover .furniture-img-container img {
+    transform: scale(1.08); /* Phóng to nhẹ 8% */
+}
+
+/* Hiệu ứng vệt sáng quét qua thấu kính (Shine Effect) khi hover */
+.furniture-img-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+}
+
+@keyframes shine {
+    100% { left: 150%; }
+}
+
+.furniture-card:hover .furniture-img-container::after {
+    animation: shine 0.9s ease-in-out;
+}
+
+/* Tiêu đề và chữ */
+.furniture-title {
+    font-family: 'Playfair Display', 'Georgia', serif; /* Tạo nét sang trọng quý phái */
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    color: #1a1a1a;
+    transition: color 0.3s ease;
+}
+
+.furniture-card:hover .furniture-title {
+    color: #c5a880; /* Chữ chuyển vàng đồng khi hover vào card */
+}
+
+/* Nút mua hàng tối giản sang trọng */
+.btn-furniture {
+    background: transparent;
+    border: 1px solid #1a1a1a;
+    color: #1a1a1a;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 500;
+    border-radius: 0px; /* Nút vuông góc Studio */
+    transition: all 0.3s ease;
+    padding: 8px 0;
+}
+
+.btn-furniture:hover {
+    background: #1a1a1a;
+    color: #ffffff;
+    border-color: #1a1a1a;
+}
+
+/* Tag trang trí "Premium / Collection" góc trên card */
+.furniture-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #c5a880;
+    color: #fff;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    z-index: 2;
+    font-weight: bold;
+}

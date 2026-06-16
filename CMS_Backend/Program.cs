@@ -27,27 +27,17 @@ builder.Services.AddAuthentication(
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-// 1. Khai báo chính sách CORS
-builder.Services.AddCors(options => {
-    options.AddPolicy("AllowAll", policy => {
-        // Cho phép mọi nguồn (Origin), mọi phương thức (GET, POST...), mọi tiêu đề (Header)
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
-// ---- CẤU HÌNH CORS (THÊM VÀO TRƯỚC builder.Build()) ----
+// 🌟 CHỈ GIỮ LẠI 1 CHÍNH SÁCH CORS DUY NHẤT (Đã loại bỏ chính sách "AllowAll" gây đá nhau)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
         policy.WithOrigins("http://localhost:3000") // Cho phép ReactJS ở port 3000 gọi tới
-              .AllowAnyHeader()                     // Cho phép mọi loại Header (Content-Type, Authorization...)
-              .AllowAnyMethod()                     // Cho phép mọi phương thức HTTP (GET, POST, PUT, DELETE)
-              .AllowCredentials();                  // Hỗ trợ truyền Cookie/Session nếu cần sau này
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();                  // Hỗ trợ truyền Cookie/Session an toàn
     });
 });
-
 
 var app = builder.Build();
 
@@ -64,17 +54,15 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
+// 🌟 VÌ UPLOADS NẰM TRONG WWWROOT, CHỈ CẦN LỆNH NÀY LÀ ĐỦ ĐỂ ĐỌC ẢNH
 app.UseStaticFiles();
-// Kích hoạt CORS đúng vị trí này
-app.UseCors("AllowReactApp");
 
 app.UseRouting();
-// 2. Kích hoạt chính sách CORS đã khai báo ở trên
-app.UseCors("AllowAll");
 
+// 🌟 KÍCH HOẠT CORS ĐÚNG VỊ TRÍ NÀY (Bỏ lệnh UseCors("AllowAll") trùng lặp ở dưới đi)
+app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -1,0 +1,176 @@
+﻿@model CMS.Data.Entities.Order
+
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<div class="container-fluid py-2">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-slate-800 mb-1">
+                Đơn hàng #@Model.Id
+            </h4>
+            <p class="text-muted mb-0">
+                Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- LEFT: ORDER INFO -->
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body">
+
+                    <h6 class="fw-bold mb-3">Thông tin khách hàng</h6>
+
+                    <p class="mb-1">
+                        <b>Tên:</b> @(Model.Customer?.FullName ?? "Không có")
+                    </p>
+
+                    <p class="mb-1">
+                        <b>Mã KH:</b> #@Model.CustomerId
+                    </p>
+
+                    <p class="mb-0">
+                        <b>Ghi chú:</b>
+                        @(string.IsNullOrEmpty(Model.Notes) ? "Không có" : Model.Notes)
+                    </p>
+
+                </div>
+            </div>
+
+            <!-- UPDATE STATUS -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+
+                    <h6 class="fw-bold mb-3">Cập nhật trạng thái</h6>
+
+                    <form method="post" action="/Order/UpdateStatus">
+
+                        <input type="hidden" name="id" value="@Model.Id" />
+
+                        <select name="status" class="form-select mb-3">
+
+                            <option value="0" selected="@(Model.Status == 0)">
+                                Chờ duyệt
+                            </option>
+
+                            <option value="1" selected="@(Model.Status == 1)">
+                                Đang giao
+                            </option>
+
+                            <option value="2" selected="@(Model.Status == 2)">
+                                Hoàn tất
+                            </option>
+
+                        </select>
+
+                        <button class="btn btn-primary w-100">
+                            Cập nhật
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: ORDER ITEMS -->
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-0">
+
+                    <table class="table align-middle mb-0">
+
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th class="text-center">SL</th>
+                                <th class="text-end">Đơn giá</th>
+                                <th class="text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @{
+                                decimal total = 0;
+                            }
+
+                            @foreach (var item in Model.OrderDetails)
+                            {
+                                var lineTotal = item.Quantity * item.UnitPrice;
+                                total += lineTotal;
+
+                                <tr>
+
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+
+                                            <img src="@(item.Product?.ImageUrl ?? "https://via.placeholder.com/60")"
+                                                 style="width:50px;height:50px;object-fit:cover"
+                                                 class="rounded border" />
+
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    @item.Product?.Name
+                                                </div>
+                                                <small class="text-muted">
+                                                    #@item.ProductId
+                                                </small>
+                                            </div>
+
+                                        </div>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="badge bg-primary">
+                                            @item.Quantity
+                                        </span>
+                                    </td>
+
+                                    <td class="text-end">
+                                        @item.UnitPrice.ToString("N0") đ
+                                    </td>
+
+                                    <td class="text-end fw-bold text-success">
+                                        @lineTotal.ToString("N0") đ
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold">
+                                    Tổng tiền:
+                                </td>
+                                <td class="text-end fw-bold text-danger">
+                                    @total.ToString("N0") đ
+                                </td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

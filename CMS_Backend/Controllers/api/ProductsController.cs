@@ -47,6 +47,10 @@ namespace CMS.Backend.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            // Tự động lấy cấu hình Domain/Port hiện tại của Server (.NET tự nhận diện)
+            var request = HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}";
+
             var products = await _context.Products
                                          .Include(p => p.CategoryProduct)
                                          .OrderByDescending(p => p.Id)
@@ -57,7 +61,12 @@ namespace CMS.Backend.Controllers.Api
                                              p.Description,
                                              p.Price,
                                              p.StockQuantity,
-                                             p.ImageUrl,
+
+                                             // ĐÃ SỬA: Tự động nối baseUrl của Server vào trước chuỗi /uploads/...
+                                             ImageUrl = string.IsNullOrEmpty(p.ImageUrl)
+                                                        ? "https://placehold.co/300x300?text=No+Image"
+                                                        : (p.ImageUrl.StartsWith("http") ? p.ImageUrl : baseUrl + p.ImageUrl),
+
                                              p.CategoryProductId,
                                              CategoryProductName = p.CategoryProduct != null ? p.CategoryProduct.Name : "Không xác định"
                                          })
@@ -73,6 +82,10 @@ namespace CMS.Backend.Controllers.Api
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+            // Tự động lấy cấu hình Domain/Port hiện tại của Server
+            var request = HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}";
+
             var product = await _context.Products
                                         .Include(p => p.CategoryProduct)
                                         .Where(p => p.Id == id)
@@ -83,7 +96,12 @@ namespace CMS.Backend.Controllers.Api
                                             p.Description,
                                             p.Price,
                                             p.StockQuantity,
-                                            p.ImageUrl,
+
+                                            // ĐÃ SỬA: Xử lý gán domain tuyệt đối cho API chi tiết sản phẩm
+                                            ImageUrl = string.IsNullOrEmpty(p.ImageUrl)
+                                                       ? "https://placehold.co/300x300?text=No+Image"
+                                                       : (p.ImageUrl.StartsWith("http") ? p.ImageUrl : baseUrl + p.ImageUrl),
+
                                             p.CategoryProductId,
                                             CategoryProduct = p.CategoryProduct != null ? new
                                             {
@@ -116,6 +134,10 @@ namespace CMS.Backend.Controllers.Api
                 return NotFound(new { message = "Danh mục sản phẩm này không tồn tại!" });
             }
 
+            // Tự động lấy cấu hình Domain/Port hiện tại của Server
+            var request = HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}";
+
             var products = await _context.Products
                                          .Where(p => p.CategoryProductId == categoryId)
                                          .Select(p => new
@@ -124,13 +146,131 @@ namespace CMS.Backend.Controllers.Api
                                              p.Name,
                                              p.Price,
                                              p.StockQuantity,
-                                             p.ImageUrl
+
+                                             // ĐÃ SỬA: Xử lý gán tên miền tương tự cho API lọc theo danh mục
+                                             ImageUrl = string.IsNullOrEmpty(p.ImageUrl)
+                                                        ? "https://placehold.co/300x300?text=No+Image"
+                                                        : (p.ImageUrl.StartsWith("http") ? p.ImageUrl : baseUrl + p.ImageUrl)
                                          })
                                          .ToListAsync();
 
             return Ok(products);
         }
 
+        // =====================================
+        // SHOP FILTER + SEARCH + PAGINATION
+        // URL:
+        // GET api/products/shop
+        // =====================================
+        [HttpGet("shop")]
+        public async Task<IActionResult> Shop(
+            int page = 1,
+            int pageSize = 12,
+            string? keyword = null,
+            int? categoryId = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null,
+            bool? inStock = null,
+            string? sort = null)
+        {
+            var request = HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}";
+
+            IQueryable<Product> query = _context.Products
+                .Include(p => p.CategoryProduct);
+
+            // Tìm kiếm
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                query = query.Where(p =>
+                    p.Name.Contains(keyword) ||
+                    p.Description.Contains(keyword));
+            }
+
+            // Lọc theo danh mục
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p =>
+                    p.CategoryProductId == categoryId.Value);
+            }
+
+            // Giá từ
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p =>
+                    p.Price >= minPrice.Value);
+            }
+
+            // Giá đến
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p =>
+                    p.Price <= maxPrice.Value);
+            }
+
+            // Còn hàng
+            if (inStock.HasValue && inStock.Value)
+            {
+                query = query.Where(p =>
+                    p.StockQuantity > 0);
+            }
+
+            // Sắp xếp
+            query = sort switch
+            {
+                "price_asc" => query.OrderBy(p => p.Price),
+
+                "price_desc" => query.OrderByDescending(p => p.Price),
+
+                "name_asc" => query.OrderBy(p => p.Name),
+
+                "name_desc" => query.OrderByDescending(p => p.Name),
+
+                _ => query.OrderByDescending(p => p.Id)
+            };
+
+            int totalItems = await query.CountAsync();
+
+            var products = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Name,
+                    p.Description,
+                    p.Price,
+                    p.StockQuantity,
+
+                    ImageUrl = string.IsNullOrEmpty(p.ImageUrl)
+                        ? "https://placehold.co/300x300?text=No+Image"
+                        : (p.ImageUrl.StartsWith("http")
+                            ? p.ImageUrl
+                            : baseUrl + p.ImageUrl),
+
+                    p.CategoryProductId,
+
+                    CategoryProductName =
+                        p.CategoryProduct != null
+                        ? p.CategoryProduct.Name
+                        : "Không xác định"
+                })
+                .ToListAsync();
+
+            return Ok(new
+            {
+                products,
+
+                pagination = new
+                {
+                    currentPage = page,
+                    pageSize,
+                    totalItems,
+                    totalPages = (int)Math.Ceiling(
+                        totalItems / (double)pageSize)
+                }
+            });
+        }
         // =====================================
         // CREATE PRODUCT
         // URL: POST api/products

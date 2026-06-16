@@ -1,0 +1,43 @@
+/* ==========================================================================
+   RESET & GIẢI PHÓNG KHÔNG GIAN CHO TRANG CHỦ (FIX LỖI CO CỤM DỌC)
+   ========================================================================== */
+
+/* Ép khung trang chủ bung hết 100% chiều rộng màn hình, triệt tiêu flex-direction cũ nếu có */
+.modern-lp-wrapper,
+.modern-lp-section-category,
+.modern-lp-section-products {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important; 
+  float: none !important;
+  clear: both !important;
+  box-sizing: border-box !important;
+}
+
+/* Định nghĩa lại Container chuẩn chỉnh của Bootstrap 5 để các Card dàn đều */
+.modern-lp-section-category .container,
+.modern-lp-section-products .container {
+  max-width: 1320px !important; /* Độ rộng tối đa chuẩn PC */
+  width: 100% !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+  padding-right: 20px !important;
+  padding-left: 20px !important;
+  display: block !important;
+}
+
+/* Đảm bảo các hàng Row bên trong không bị dính thuộc tính flex đè của layout cũ */
+.modern-lp-section-category .row,
+.modern-lp-section-products .row {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  flex-direction: row !important; /* Ép buộc luôn luôn xếp hàng ngang */
+  margin-right: -12px !important;
+  margin-left: -12px !important;
+}
+
+/* Ép thanh cuộn ngang của Category luôn chiếm trọn vẹn bề ngang của Container */
+.modern-lp-section-category .hide-scrollbar {
+  width: 100% !important;
+  max-width: 100% !important;
+}

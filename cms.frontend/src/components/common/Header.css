@@ -1,0 +1,213 @@
+/* ==========================================================================
+   AT DESIGN HEADER BASE
+   ========================================================================== */
+.at-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #f0f0f0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Định hình luồng ngang chuẩn cho thanh Header */
+.at-header-container {
+    max-width: 1300px;
+    width: 92%;
+    margin: 0 auto;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   1. LOGO STYLE
+   ========================================================================== */
+.at-logo a {
+    font-size: 24px;
+    font-weight: 800;
+    color: #222222;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.at-logo a span {
+    color: #b88e2f; /* Màu vàng đồng thương hiệu sang trọng */
+    font-weight: 400;
+    text-transform: capitalize;
+    margin-left: 2px;
+}
+
+/* ==========================================================================
+   2. THANH TÌM KIẾM VÀ BOX SEARCH
+   ========================================================================== */
+.at-search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #f6f6f6;
+    border: 1px solid transparent;
+    border-radius: 99px;
+    padding: 0 6px 0 18px;
+    width: 320px;
+    height: 44px;
+    transition: all 0.3s ease;
+}
+.at-search-barInput:focus-within {
+    background-color: #ffffff;
+    border-color: #b88e2f;
+    box-shadow: 0 4px 12px rgba(184, 142, 47, 0.1);
+}
+.at-search-bar input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: #333;
+}
+.at-search-bar input::placeholder {
+    color: #999;
+}
+.at-search-bar button {
+    background: #b88e2f;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.at-search-bar button:hover {
+    background: #222222;
+}
+.search-icon {
+    color: #ffffff;
+    font-size: 15px;
+}
+
+/* ==========================================================================
+   3. MENU ĐIỀU HƯỚNG CHÍNH
+   ========================================================================== */
+.at-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+.at-nav-menu a {
+    font-size: 15px;
+    font-weight: 500;
+    color: #555555;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    position: relative;
+    padding: 6px 0;
+}
+.at-nav-menu a:hover {
+    color: #b88e2f;
+}
+/* Hiệu ứng thanh gạch chân khi hover menu */
+.at-nav-menu a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #b88e2f;
+    transition: width 0.2s ease;
+}
+.at-nav-menu a:hover::after {
+    width: 100%;
+}
+
+/* ==========================================================================
+   4. HÀNG ACTIONS (ICONS + USER)
+   ========================================================================== */
+.at-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+.at-header-actions .action-item {
+    color: #222222;
+    font-size: 22px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: color 0.2s;
+}
+.at-header-actions .action-item:hover {
+    color: #b88e2f;
+}
+
+/* Badge số lượng nhỏ trên đầu icon */
+.action-badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background-color: #222222;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cart-count {
+    background-color: #b88e2f; /* Highlight riêng badge giỏ hàng */
+}
+
+/* Khối text tài khoản cạnh icon User */
+.account-link {
+    gap: 6px;
+}
+.account-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #444444;
+}
+.account-link:hover .account-text {
+    color: #b88e2f;
+}
+
+/* Nút ẩn hiện menu di động */
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #222;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   RESPONSIVE (THIẾT KẾ TRÊN ĐIỆN THOẠI)
+   ========================================================================== */
+@media (max-width: 992px) {
+    .at-nav-menu, .account-text {
+        display: none; /* Ẩn menu chữ chữ trên mobile */
+    }
+    .mobile-menu-toggle {
+        display: block; /* Hiện icon hamburger trên mobile */
+    }
+    .at-search-bar {
+        width: 200px; /* Thu nhỏ thanh search vừa màn hình nhỏ */
+    }
+}
+
+@media (max-width: 576px) {
+    .at-search-bar {
+        display: none; /* Màn hình quá bé thì ẩn luôn search, hoặc tối ưu tùy ý bạn */
+    }
+}

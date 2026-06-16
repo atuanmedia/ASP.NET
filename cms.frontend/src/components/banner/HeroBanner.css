@@ -1,0 +1,47 @@
+/* Thu nhỏ chiều cao của khung Banner */
+.hero-compact {
+  position: relative;
+  width: 100%;
+  height: 420px; /* Chiều cao cố định vừa vặn, không quá cao */
+  background-image: url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1920'); /* Bạn có thể đổi link ảnh nội thất của bạn ở đây */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+/* Lớp phủ mờ tối vừa phải để làm nổi bật chữ trắng */
+.hero-overlay-compact {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.45); /* Độ mờ 45% tạo cảm giác dễ chịu */
+  z-index: 1;
+}
+
+/* Đảm bảo nội dung nổi trên lớp phủ */
+.z-1 {
+  z-index: 2;
+}
+
+/* Định dạng chữ nhỏ gọn và hiện đại hơn */
+.hero-content-compact h1 {
+  font-size: 2.2rem; /* Giảm nhẹ cỡ chữ tiêu đề */
+  letter-spacing: 1px;
+}
+
+.hero-content-compact p {
+  font-size: 0.95rem !important;
+  letter-spacing: 0.5px;
+}
+
+/* Định dạng nút bấm nhỏ nhắn, chuyển màu mượt mà */
+.small-btn {
+  font-size: 0.8rem !important;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+  border-width: 1.5px;
+  transition: background-color 0.3s ease, color 0.3s ease !important; /* Tránh xung đột với framer-motion */
+}

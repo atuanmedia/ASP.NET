@@ -1,0 +1,13 @@
+/* Đảm bảo toàn bộ trang web chiếm hết chiều cao màn hình nếu ít nội dung */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Khung chứa nội dung các trang con (Home, Shop...) */
+.main-content {
+  flex: 1; /* Đẩy footer xuống đáy trang nếu nội dung quá ngắn */
+  padding-top: 80px; /* Độ cao bằng đúng độ cao của thanh Header để tránh bị đè chữ */
+  background-color: #ffffff;
+}

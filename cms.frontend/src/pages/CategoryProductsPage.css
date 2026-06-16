@@ -1,0 +1,142 @@
+.at-category-page {
+    padding-bottom: 60px;
+    background-color: #fff;
+}
+
+.at-category-hero {
+    padding: 30px 0 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 20px;
+}
+
+.at-breadcrumb-minimal {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.at-breadcrumb-minimal a {
+    color: #777;
+    text-decoration: none;
+}
+
+.at-breadcrumb-minimal .sep {
+    margin: 0 8px;
+    color: #ccc;
+}
+
+.at-breadcrumb-minimal .current {
+    color: #b88e2f;
+    font-weight: 600;
+}
+
+.at-page-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.at-page-subtitle {
+    color: #666;
+    font-size: 14px;
+}
+
+.at-filter-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+}
+
+.icon-grid {
+    color: #b88e2f;
+}
+
+.filter-label {
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #888;
+}
+
+/* KHỐI GRID QUAN TRỌNG: Chia cột tự động co giãn */
+.at-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    width: 100%;
+}
+
+/* Định hình ảnh bên trong card không bị bóp méo tỉ lệ */
+.at-products-grid .furniture-image {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    display: block;
+}
+
+.at-empty-studio {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fbfbfb;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 40px auto;
+}
+
+.empty-studio-icon {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.at-btn-dark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #333;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 15px;
+}
+
+.at-btn-dark:hover {
+    background: #b88e2f;
+    color: #fff;
+}
+
+.at-loading-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+}
+
+.at-minimal-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #b88e2f;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

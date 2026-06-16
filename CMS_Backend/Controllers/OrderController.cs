@@ -7,6 +7,7 @@ using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
 {
@@ -25,25 +26,40 @@ namespace CMS.Backend.Controllers
         // Hiển thị danh sách đơn hàng
         public IActionResult Index()
         {
-            // Lấy toàn bộ dữ liệu từ bảng Orders
-            var orders = _context.Orders.ToList();
+            var orders = _context.Orders
+         .Include(o => o.Customer)
+         .OrderByDescending(o => o.OrderDate)
+         .ToList();
 
-            // Trả dữ liệu sang View
             return View(orders);
         }
 
         // Hiển thị chi tiết đơn hàng
         public IActionResult Details(int id)
         {
-            // Tìm đơn hàng theo Id
-            var order = _context.Orders.Find(id);
+            var order = _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .FirstOrDefault(o => o.Id == id);
 
-            // Nếu không tìm thấy thì trả về lỗi 404
             if (order == null)
                 return NotFound();
 
-            // Trả dữ liệu sang View
             return View(order);
+        }
+        [HttpPost]
+        public IActionResult UpdateStatus(int id, int status)
+        {
+            var order = _context.Orders.FirstOrDefault(x => x.Id == id);
+
+            if (order == null)
+                return NotFound();
+
+            order.Status = status;
+            _context.SaveChanges();
+
+            return RedirectToAction("Details", new { id });
         }
     }
 }

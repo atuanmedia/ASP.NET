@@ -1,0 +1,70 @@
+/* Hiệu ứng hover sang xịn mịn cho Card Danh Mục */
+.modern-category-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+}
+
+.modern-category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08) !important;
+  background-color: #ffffff;
+}
+
+/* Đổi màu nhẹ cho icon khi hover vào card */
+.modern-category-card:hover .category-icon-wrapper {
+  background-color: #212529 !important; /* Đổi sang nền tối */
+  color: #ffffff !important;             /* Đổi icon sang màu trắng */
+  transition: all 0.3s ease;
+}
+/* Ẩn thanh cuộn (scrollbar) để nhìn giao diện gọn gàng, cao cấp */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Cho Chrome, Safari và Opera */
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Cho IE và Edge */
+  scrollbar-width: none;  /* Cho Firefox */
+}
+
+/* Giữ nguyên hiệu ứng hover cũ của bạn */
+.modern-category-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+}
+
+.modern-category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.modern-category-card:hover .category-icon-wrapper {
+  background-color: #212529 !important;
+  color: #ffffff !important;
+  transition: all 0.3s ease;
+}
+/* Đảm bảo khung section danh mục và sản phẩm luôn bung hết 100% chiều ngang hàng */
+.category-section, .products-section {
+  width: 100% !important;
+  display: block !important; /* Loại bỏ flex cũ nếu có */
+}
+
+/* Ẩn thanh cuộn ngang thô kệch trên các trình duyệt */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Style hover mượt mà cho card */
+.modern-category-card {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+  border: 1px solid #eee !important;
+}
+
+.modern-category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}

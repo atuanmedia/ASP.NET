@@ -1,0 +1,39 @@
+.bb-app {
+  min-height: 100vh;
+}
+
+.bb-row {
+  margin-top: 22px;
+}
+
+.bb-col {
+  position: relative;
+}
+
+.bb-col--left {
+  padding-right: 14px;
+}
+
+.bb-col--right {
+  padding-left: 14px;
+}
+
+.bb-spacer {
+  height: 10px;
+}
+
+@media (max-width: 991.98px) {
+  .bb-col--left {
+    padding-right: 0;
+  }
+
+  .bb-col--right {
+    padding-left: 0;
+    margin-top: 14px;
+  }
+
+  .bb-row {
+    margin-top: 10px;
+  }
+}
+
