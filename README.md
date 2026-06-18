@@ -2,7 +2,7 @@ Dựa trên tiến độ bạn đã triển khai và hình ảnh cấu trúc Sol
 
 ---
 
-## 🏛 Kiến trúc dự án CMS_NguyenNgocBaoNgan
+## 🏛 Kiến trúc dự án CMS_NguyenDuyAnhTuan
 
 ### 1. Tổng quan
 Dự án áp dụng mô hình **3 lớp mở rộng (Data – Backend – Frontend)**, trong đó Backend tách riêng **API** và **MVC Admin** để dễ bảo trì:
