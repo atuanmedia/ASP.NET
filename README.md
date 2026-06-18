@@ -1,6 +1,3 @@
-Dựa trên tiến độ bạn đã triển khai và hình ảnh cấu trúc Solution, mình đề xuất chỉnh lại kiến trúc dự án theo hướng **rõ ràng hơn, phân tách API và MVC**, đồng thời phù hợp với đề tài thương mại điện tử bán đồ thủ công mỹ nghệ:
-
----
 
 ## 🏛 Kiến trúc dự án CMS_NguyenDuyAnhTuan
 
