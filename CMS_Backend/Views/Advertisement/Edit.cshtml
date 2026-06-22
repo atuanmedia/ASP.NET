@@ -1,0 +1,126 @@
+@model CMS.Data.Entities.Advertisement
+@{
+    ViewData["Title"] = "Sửa Banner";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="d-flex align-items-center mb-4 gap-3">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
+    </a>
+    <div>
+        <h4 class="fw-bold mb-0"><i class="bi bi-pencil-square text-primary me-2"></i>Chỉnh sửa banner</h4>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card card-custom p-4">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="CreatedAt" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tiêu đề <span class="text-danger">*</span></label>
+                    <input asp-for="Title" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Mô tả ngắn (subtitle)</label>
+                    <input asp-for="Subtitle" class="form-control" />
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Tên nút bấm</label>
+                        <input asp-for="ButtonText" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Đường dẫn nút bấm</label>
+                        <input asp-for="ButtonLink" class="form-control" />
+                    </div>
+                </div>
+
+                <!-- Ảnh hiện tại -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Ảnh banner</label>
+                    <div class="border rounded-3 p-3 bg-light">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <div class="mb-3">
+                                <label class="small text-muted">Ảnh hiện tại:</label>
+                                <img id="previewImg" src="@Model.ImageUrl" alt="@Model.Title"
+                                     class="d-block rounded-3 mt-1 w-100" style="max-height:200px;object-fit:cover" />
+                            </div>
+                        }
+                        else
+                        {
+                            <img id="previewImg" src="" alt="" class="d-none rounded-3 mt-1 w-100" style="max-height:200px;object-fit:cover" />
+                        }
+
+                        <div class="mb-2">
+                            <label class="form-label small text-muted mb-1">Upload ảnh mới</label>
+                            <input type="file" name="uploadImage" class="form-control form-control-sm" accept="image/*"
+                                   onchange="previewImage(this)" />
+                        </div>
+                        <div class="text-center text-muted small my-2">— hoặc thay URL —</div>
+                        <input asp-for="ImageUrl" class="form-control form-control-sm"
+                               placeholder="https://..." oninput="previewUrl(this.value)" />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Thứ tự hiển thị</label>
+                        <input asp-for="SortOrder" type="number" min="1" class="form-control" />
+                    </div>
+                    <div class="col-md-8 d-flex align-items-end">
+                        <div class="form-check form-switch mb-1">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" />
+                            <label asp-for="IsActive" class="form-check-label fw-semibold">Đang hiển thị</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-floppy-fill me-1"></i> Lưu thay đổi
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card card-custom p-3 bg-light border-0">
+            <h6 class="fw-bold mb-2"><i class="bi bi-info-circle-fill text-info me-1"></i>Thông tin</h6>
+            <ul class="small text-muted mb-0 ps-3">
+                <li class="mb-1">Ngày tạo: <strong>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</strong></li>
+                <li class="mb-1">Để trống "Upload ảnh" và "URL" → giữ ảnh cũ</li>
+                <li>Thứ tự nhỏ hơn → hiển thị trước</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => showPreview(e.target.result);
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+function previewUrl(url) {
+    if (url.startsWith('http')) showPreview(url);
+}
+function showPreview(src) {
+    const img = document.getElementById('previewImg');
+    img.src = src;
+    img.classList.remove('d-none');
+}
+</script>
+}

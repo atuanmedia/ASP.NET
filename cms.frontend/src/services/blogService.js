@@ -1,20 +1,18 @@
 import axiosClient from '../api/axiosClient';
 
 const blogService = {
-    // Lấy tất cả bài viết
-    getAllPosts: () => {
-        return axiosClient.get('/Posts');
-    },
+  // Lấy bài viết có phân trang + lọc theo danh mục
+  getAllPosts: ({ page = 1, pageSize = 9, categoryId = null } = {}) => {
+    const params = { page, pageSize };
+    if (categoryId) params.categoryId = categoryId;
+    return axiosClient.get('/Posts', { params });
+  },
 
-    // Lấy bài viết theo chuyên mục
-    getPostByCategoryId: (categoryId) => {
-        return axiosClient.get(`/Posts/Category/${categoryId}`);
-    },
+  // Chi tiết bài viết
+  getPostById: (id) => axiosClient.get(`/Posts/${id}`),
 
-    // Lấy danh sách chuyên mục
-    getBlogCategories: () => {
-        return axiosClient.get('/Categories');
-    }
+  // Danh sách danh mục bài viết
+  getBlogCategories: () => axiosClient.get('/Categories'),
 };
 
 export default blogService;

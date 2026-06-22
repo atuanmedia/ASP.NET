@@ -1,70 +1,152 @@
-/* Hiệu ứng hover sang xịn mịn cho Card Danh Mục */
-.modern-category-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+/* ==============================
+   CATEGORY GRID
+   ============================== */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+/* ── Card ── */
+.cat-card {
+  position: relative;
+  display: block;
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  aspect-ratio: 3 / 4;
+  background: #1a1a1a;
   cursor: pointer;
+  /* Ken-Burns container */
 }
 
-.modern-category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08) !important;
-  background-color: #ffffff;
+/* ── Background image ── */
+.cat-card-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+}
+.cat-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.05);
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+.cat-card:hover .cat-card-img {
+  transform: scale(1.12);
 }
 
-/* Đổi màu nhẹ cho icon khi hover vào card */
-.modern-category-card:hover .category-icon-wrapper {
-  background-color: #212529 !important; /* Đổi sang nền tối */
-  color: #ffffff !important;             /* Đổi icon sang màu trắng */
-  transition: all 0.3s ease;
+/* ── Overlay ── */
+.cat-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.80) 0%,
+    rgba(0, 0, 0, 0.30) 45%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+  transition: background 0.3s ease;
+  border-radius: inherit;
 }
-/* Ẩn thanh cuộn (scrollbar) để nhìn giao diện gọn gàng, cao cấp */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Cho Chrome, Safari và Opera */
-}
-
-.hide-scrollbar {
-  -ms-overflow-style: none;  /* Cho IE và Edge */
-  scrollbar-width: none;  /* Cho Firefox */
-}
-
-/* Giữ nguyên hiệu ứng hover cũ của bạn */
-.modern-category-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  cursor: pointer;
-}
-
-.modern-category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08) !important;
+.cat-card:hover .cat-card-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.40) 50%,
+    rgba(0, 0, 0, 0.12) 100%
+  );
 }
 
-.modern-category-card:hover .category-icon-wrapper {
-  background-color: #212529 !important;
-  color: #ffffff !important;
-  transition: all 0.3s ease;
+/* ── Content ── */
+.cat-card-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 18px;
+  color: #fff;
+  transform: translateY(4px);
+  transition: transform 0.3s ease;
 }
-/* Đảm bảo khung section danh mục và sản phẩm luôn bung hết 100% chiều ngang hàng */
-.category-section, .products-section {
-  width: 100% !important;
-  display: block !important; /* Loại bỏ flex cũ nếu có */
-}
-
-/* Ẩn thanh cuộn ngang thô kệch trên các trình duyệt */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.cat-card:hover .cat-card-content {
+  transform: translateY(0);
 }
 
-/* Style hover mượt mà cho card */
-.modern-category-card {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  cursor: pointer;
-  border: 1px solid #eee !important;
+.cat-card-name {
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+  letter-spacing: 0.2px;
+  line-height: 1.25;
+}
+.cat-card-desc {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,.7);
+  margin: 0 0 10px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.modern-category-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+/* ── CTA button ── */
+.cat-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.85);
+  border-bottom: 1px solid rgba(255,255,255,.4);
+  padding-bottom: 1px;
+  transition: color 0.2s, border-color 0.2s, gap 0.2s;
+}
+.cat-card:hover .cat-card-btn {
+  color: #fff;
+  border-color: #fff;
+  gap: 10px;
+}
+.cat-arrow { transition: transform 0.2s; }
+.cat-card:hover .cat-arrow { transform: translateX(4px); }
+
+/* ── Skeleton loading ── */
+.cat-skeleton-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+.cat-skeleton {
+  aspect-ratio: 3 / 4;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Responsive ── */
+@media (min-width: 1200px) {
+  .cat-grid { grid-template-columns: repeat(6, 1fr); }
+}
+@media (min-width: 768px) and (max-width: 1199px) {
+  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 767px) {
+  .cat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .cat-card-name { font-size: .88rem; }
 }

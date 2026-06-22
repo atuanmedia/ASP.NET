@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 import "./ProductCard.css";
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85";
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
+    const { addItem } = useCart();
+    const [added, setAdded] = useState(false);
+
+    const handleAddToCart = (e) => {
+        e.stopPropagation();
+        addItem(product, 1);
+        setAdded(true);
+        setTimeout(() => setAdded(false), 1800);
+    };
 
     const handleViewDetail = () => {
         navigate(`/product/${product.id}`);
@@ -71,9 +81,18 @@ const ProductCard = ({ product }) => {
                             : product.price}
                     </div>
 
-                    <button className="btn-furniture" onClick={handleViewDetail}>
-                        Xem chi tiết
-                    </button>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                        <button className="btn-furniture" onClick={handleViewDetail}>
+                            Xem chi tiết
+                        </button>
+                        <button
+                            className="btn-furniture btn-add-cart"
+                            onClick={handleAddToCart}
+                            title="Thêm vào giỏ hàng"
+                        >
+                            {added ? "✓" : "🛒"}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

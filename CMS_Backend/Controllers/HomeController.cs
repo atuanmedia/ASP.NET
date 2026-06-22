@@ -1,38 +1,68 @@
-﻿/*
+/*
  Họ Và Tên : Nguyễn Duy Anh Tuấn
-Mssv: 2123110162
-Lớp : CCQ2311E
+ Mssv: 2123110162
+ Lớp : CCQ2311E
 */
 using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
+    // ViewModel truyền dữ liệu thống kê ra View
+    public class DashboardViewModel
+    {
+        public int TotalProducts    { get; set; }
+        public int TotalOrders      { get; set; }
+        public int TotalCustomers   { get; set; }
+        public int TotalPosts       { get; set; }
+
+        public int OrdersPending    { get; set; } // Status = 0
+        public int OrdersShipping   { get; set; } // Status = 1
+        public int OrdersDone       { get; set; } // Status = 2
+
+        public List<Order>  RecentOrders { get; set; } = new();
+        public List<Post>   RecentPosts  { get; set; } = new();
+    }
+
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        // Inject DbContext vào Controller
         public HomeController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // Hiển thị 3 bản tin mới nhất lên trang chủ
         public IActionResult Index()
         {
-            // LINQ: Kết hợp Include, OrderByDescending và Take để lấy đúng 3 bài mới nhất
-            var latestPosts = _context.Posts
-                                      .Include(p => p.Category) // Lấy kèm tên danh mục để hiển thị ở giao diện
-                                      .OrderByDescending(p => p.CreatedDate) // Sắp xếp ngày mới nhất lên đầu
-                                      .Take(3) // Chỉ lấy đúng 3 bản ghi đầu tiên
-                                      .ToList();
+            var vm = new DashboardViewModel
+            {
+                TotalProducts  = _context.Products.Count(),
+                TotalOrders    = _context.Orders.Count(),
+                TotalCustomers = _context.Customers.Count(),
+                TotalPosts     = _context.Posts.Count(),
 
-            // Truyền danh sách 3 bài viết ra View trang chủ
-            return View(latestPosts);
+                OrdersPending  = _context.Orders.Count(o => o.Status == 0),
+                OrdersShipping = _context.Orders.Count(o => o.Status == 1),
+                OrdersDone     = _context.Orders.Count(o => o.Status == 2),
+
+                RecentOrders = _context.Orders
+                    .Include(o => o.Customer)
+                    .Include(o => o.OrderDetails)
+                    .OrderByDescending(o => o.OrderDate)
+                    .Take(7)
+                    .ToList(),
+
+                RecentPosts = _context.Posts
+                    .Include(p => p.Category)
+                    .OrderByDescending(p => p.CreatedDate)
+                    .Take(5)
+                    .ToList()
+            };
+
+            return View(vm);
         }
     }
 }

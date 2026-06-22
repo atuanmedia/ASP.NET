@@ -1,85 +1,86 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Import Link để chuyển hướng trang
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import categoryProductService from "../../services/categoryProductService";
 import "./CategoryProductList.css";
 
-const CategoryProductList = () => {
-    const [categoryProducts, setCategoryProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
+const BACKEND = "https://localhost:7075";
 
-    useEffect(() => {
-        const fetchCategoryProducts = async () => {
-            try {
-                const data = await categoryProductService.getAllCategoryProducts();
-                setCategoryProducts(data);
-            } catch (error) {
-                console.error("Lỗi khi tải danh mục sản phẩm:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchCategoryProducts();
-    }, []);
-
-    const getIconCategory = (name) => {
-        const lowerName = name?.toLowerCase() || "";
-        if (lowerName.includes("điện thoại") || lowerName.includes("iphone")) return "fa-mobile-screen-button";
-        if (lowerName.includes("máy tính bảng") || lowerName.includes("ipad")) return "fa-tablet-screen-button";
-        if (lowerName.includes("laptop") || lowerName.includes("máy tính")) return "fa-laptop";
-        if (lowerName.includes("tai nghe")) return "fa-headphones";
-        if (lowerName.includes("sofa") || lowerName.includes("ghế")) return "fa-couch";
-        if (lowerName.includes("bàn")) return "fa-table";
-        if (lowerName.includes("giường")) return "fa-bed";
-        return "fa-box-open"; 
-    };
-
-    if (loading) {
-        return (
-            <div className="d-flex justify-content-center py-4">
-                <div className="spinner-border spinner-border-sm text-secondary" role="status">
-                    <span className="visually-hidden">Đang tải danh mục...</span>
-                </div>
-                <span className="ms-2 text-muted small">Đang tải danh mục...</span>
-            </div>
-        );
-    }
-
-    return (
-        <div className="d-flex flex-nowrap overflow-x-auto gap-3 pb-3 justify-content-start justify-content-md-center hide-scrollbar w-100">
-            {categoryProducts.map((item) => (
-                // Bọc toàn bộ card bằng Link, dẫn tới Route chi tiết danh mục
-                <Link 
-                    to={`/category/${item.id}`} 
-                    key={item.id} 
-                    className="flex-shrink-0 text-decoration-none" 
-                    style={{ width: "160px" }}
-                >
-                    <div className="modern-category-card p-3 text-center h-100 bg-white rounded-3 border shadow-sm d-flex flex-column align-items-center justify-content-center">
-                        
-                        {/* Khung Icon tròn */}
-                        <div 
-                            className="category-icon-wrapper d-flex align-items-center justify-content-center rounded-circle mb-2"
-                            style={{ width: "50px", height: "50px", backgroundColor: "#f8f9fa", color: "#495057" }}
-                        >
-                            <i className={`fa-solid ${getIconCategory(item.name)} fs-4`}></i>
-                        </div>
-
-                        {/* Nội dung chữ */}
-                        <div className="category-text w-100">
-                            <h6 className="fw-semibold text-dark mb-1 text-truncate" style={{ fontSize: "0.85rem" }}>
-                                {item.name}
-                            </h6>
-                            <span className="text-muted d-block" style={{ fontSize: "0.75rem" }}>
-                                Xem ngay <i className="fa-solid fa-chevron-right ms-1" style={{ fontSize: "0.6rem" }}></i>
-                            </span>
-                        </div>
-
-                    </div>
-                </Link>
-            ))}
-        </div>
-    );
+const toAbsUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith("http")) return url;
+  return BACKEND + (url.startsWith("/") ? "" : "/") + url;
 };
 
-export default CategoryProductList;
+// Màu gradient nền fallback theo index
+const FALLBACK_COLORS = [
+  "linear-gradient(135deg,#1a1a1a 0%,#3d3d3d 100%)",
+  "linear-gradient(135deg,#2d3748 0%,#4a5568 100%)",
+  "linear-gradient(135deg,#744210 0%,#b7791f 100%)",
+  "linear-gradient(135deg,#1a365d 0%,#2b6cb0 100%)",
+  "linear-gradient(135deg,#22543d 0%,#276749 100%)",
+  "linear-gradient(135deg,#553c9a 0%,#805ad5 100%)",
+];
+
+export default function CategoryProductList() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading]       = useState(true);
+
+  useEffect(() => {
+    categoryProductService.getAllCategoryProducts()
+      .then(data => setCategories(Array.isArray(data) ? data : []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="cat-skeleton-row">
+        {[1,2,3,4,5,6].map(i => <div key={i} className="cat-skeleton" />)}
+      </div>
+    );
+  }
+
+  if (categories.length === 0) return null;
+
+  return (
+    <div className="cat-grid">
+      {categories.map((cat, idx) => {
+        const imgSrc = toAbsUrl(cat.imageUrl);
+        const fallback = FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
+
+        return (
+          <Link to={`/category/${cat.id}`} key={cat.id} className="cat-card">
+            {/* Ảnh nền */}
+            <div
+              className="cat-card-bg"
+              style={{ background: imgSrc ? undefined : fallback }}
+            >
+              {imgSrc && (
+                <img
+                  src={imgSrc}
+                  alt={cat.name}
+                  className="cat-card-img"
+                  onError={e => { e.target.style.display = "none"; }}
+                />
+              )}
+            </div>
+
+            {/* Overlay gradient */}
+            <div className="cat-card-overlay" />
+
+            {/* Nội dung */}
+            <div className="cat-card-content">
+              <h3 className="cat-card-name">{cat.name}</h3>
+              {cat.description && (
+                <p className="cat-card-desc">{cat.description}</p>
+              )}
+              <span className="cat-card-btn">
+                Xem ngay <span className="cat-arrow">→</span>
+              </span>
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}

@@ -36,7 +36,8 @@ namespace CMS.Backend.Controllers.Api
                                            {
                                                c.Id,
                                                c.Name,
-                                               c.Description
+                                               c.Description,
+                                               c.ImageUrl
                                            })
                                            .ToListAsync();
 
@@ -59,6 +60,7 @@ namespace CMS.Backend.Controllers.Api
                                              c.Id,
                                              c.Name,
                                              c.Description,
+                                             c.ImageUrl,
                                              // Lọc toàn bộ danh sách sản phẩm thuộc về danh mục này dựa theo CategoryProductId
                                              Products = _context.Products
                                                                 .Where(p => p.CategoryProductId == c.Id)

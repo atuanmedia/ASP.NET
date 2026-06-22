@@ -8,6 +8,6 @@
 /* Khung chứa nội dung các trang con (Home, Shop...) */
 .main-content {
   flex: 1; /* Đẩy footer xuống đáy trang nếu nội dung quá ngắn */
-  padding-top: 80px; /* Độ cao bằng đúng độ cao của thanh Header để tránh bị đè chữ */
+/* Độ cao bằng đúng độ cao của thanh Header để tránh bị đè chữ */
   background-color: #ffffff;
 }

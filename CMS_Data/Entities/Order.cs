@@ -17,7 +17,9 @@ namespace CMS.Data.Entities
 
         public int CustomerId { get; set; }
 
-        public int Status { get; set; } // 0: Chờ duyệt, 1: Đang giao, 2: Đã xong
+        public int Status { get; set; } // 0: Chờ duyệt, 1: Đang giao, 2: Đã xong, 3: Đã hủy
+
+        public string? ShippingAddress { get; set; } // Snapshot địa chỉ tại thời điểm đặt hàng
 
         public string? Notes { get; set; }
 

@@ -1,47 +1,198 @@
-/* Thu nhỏ chiều cao của khung Banner */
-.hero-compact {
+/* ==============================
+   HERO SLIDER
+   ============================== */
+.hero-slider {
   position: relative;
   width: 100%;
-  height: 420px; /* Chiều cao cố định vừa vặn, không quá cao */
-  background-image: url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1920'); /* Bạn có thể đổi link ảnh nội thất của bạn ở đây */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  height: 88vh;
+  min-height: 520px;
+  max-height: 820px;
   overflow: hidden;
+  background: #111;
+  user-select: none;
 }
 
-/* Lớp phủ mờ tối vừa phải để làm nổi bật chữ trắng */
-.hero-overlay-compact {
+/* ── Background slides ── */
+.hero-slide {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.45); /* Độ mờ 45% tạo cảm giác dễ chịu */
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 0.8s ease, transform 6s ease;
+  will-change: opacity, transform;
+}
+.hero-slide.active {
+  opacity: 1;
+  transform: scale(1);
   z-index: 1;
 }
 
-/* Đảm bảo nội dung nổi trên lớp phủ */
-.z-1 {
+/* ── Overlay gradient ── */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
   z-index: 2;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.35) 55%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
 }
 
-/* Định dạng chữ nhỏ gọn và hiện đại hơn */
-.hero-content-compact h1 {
-  font-size: 2.2rem; /* Giảm nhẹ cỡ chữ tiêu đề */
-  letter-spacing: 1px;
+/* ── Content ── */
+.hero-content {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+  max-width: 580px;
+  color: #fff;
 }
 
-.hero-content-compact p {
-  font-size: 0.95rem !important;
-  letter-spacing: 0.5px;
+.hero-eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.6);
+  margin: 0 0 14px;
+  animation: fadeUp .6s ease both;
 }
 
-/* Định dạng nút bấm nhỏ nhắn, chuyển màu mượt mà */
-.small-btn {
-  font-size: 0.8rem !important;
-  letter-spacing: 1.5px;
-  font-weight: 500;
-  border-width: 1.5px;
-  transition: background-color 0.3s ease, color 0.3s ease !important; /* Tránh xung đột với framer-motion */
+.hero-title {
+  font-size: clamp(2rem, 4.5vw, 3.6rem);
+  font-weight: 900;
+  line-height: 1.12;
+  margin: 0 0 18px;
+  letter-spacing: -0.5px;
+  animation: fadeUp .7s ease .1s both;
+}
+
+.hero-subtitle {
+  font-size: clamp(.9rem, 1.6vw, 1.15rem);
+  font-weight: 400;
+  color: rgba(255,255,255,.8);
+  margin: 0 0 32px;
+  line-height: 1.65;
+  animation: fadeUp .7s ease .2s both;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: .92rem;
+  font-weight: 800;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 50px;
+  transition: background .25s, color .25s, transform .2s, gap .2s;
+  animation: fadeUp .7s ease .3s both;
+}
+.hero-btn:hover {
+  background: #1a1a1a;
+  color: #fff;
+  transform: translateY(-2px);
+  gap: 16px;
+}
+.hero-btn-arrow {
+  font-size: 1.1rem;
+  transition: transform .2s;
+}
+.hero-btn:hover .hero-btn-arrow { transform: translateX(4px); }
+
+/* ── Arrows ── */
+.hero-arrow {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.45);
+  background: rgba(0,0,0,.25);
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, border-color .2s, transform .2s;
+  backdrop-filter: blur(4px);
+}
+.hero-arrow:hover {
+  background: rgba(255,255,255,.9);
+  border-color: #fff;
+  color: #1a1a1a;
+  transform: translateY(-50%) scale(1.1);
+}
+.hero-arrow--left  { left: 24px; }
+.hero-arrow--right { right: 24px; }
+
+/* ── Dots ── */
+.hero-dots {
+  position: absolute;
+  z-index: 4;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+.hero-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,.4);
+  cursor: pointer;
+  transition: background .3s, width .3s;
+  padding: 0;
+}
+.hero-dot.active {
+  background: #fff;
+  width: 28px;
+  border-radius: 4px;
+}
+
+/* ── Progress bar ── */
+.hero-progress {
+  position: absolute;
+  z-index: 5;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: rgba(255,255,255,.85);
+  animation: progress 5s linear forwards;
+}
+@keyframes progress {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* ── Fade-up animation ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hero-slider { height: 70vw; min-height: 340px; max-height: 520px; }
+  .hero-content { left: 5%; max-width: calc(100% - 80px); }
+  .hero-title  { font-size: clamp(1.5rem, 6vw, 2.2rem); }
+  .hero-arrow  { width: 36px; height: 36px; font-size: 1.4rem; }
+  .hero-arrow--left  { left: 10px; }
+  .hero-arrow--right { right: 10px; }
+  .hero-btn { padding: 12px 24px; font-size: .84rem; }
 }

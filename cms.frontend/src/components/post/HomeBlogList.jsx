@@ -15,7 +15,7 @@ const HomeBlogList = () => {
         const allPosts = response.data || response;
         
         // Lấy đúng 3 bài viết mới nhất để dàn hàng ngang 3 cột tuyệt đẹp trên trang chủ
-        setPosts(Array.isArray(allPosts) ? allPosts.slice(0, 6) : []);
+        setPosts(Array.isArray(allPosts) ? allPosts.slice(0, 3) : []);
       } catch (error) {
         console.error("Quá trình kết nối API bài viết thất bại:", error);
       } finally {

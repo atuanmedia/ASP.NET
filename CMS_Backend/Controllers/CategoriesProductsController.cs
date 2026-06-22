@@ -1,4 +1,4 @@
-﻿/*
+/*
  Họ Và Tên : Nguyễn Duy Anh Tuấn
 Mssv: 2123110162
 Lớp : CCQ2311E
@@ -7,6 +7,7 @@ using CMS.Data;
 using CMS.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CMS.Backend.Controllers
 {
@@ -15,112 +16,86 @@ namespace CMS.Backend.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        // Inject DbContext
         public CategoriesProductsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // Hiển thị danh sách CategoriesProducts
         public IActionResult Index()
         {
-            // Lấy dữ liệu từ Database
-            var categoriesProducts = _context.CategoriesProducts.ToList();
-
-            return View(categoriesProducts);
+            var list = _context.CategoriesProducts.ToList();
+            return View(list);
         }
 
-        // =========================
-        // CREATE
-        // =========================
-
-        // GET: Hiển thị form thêm mới
         [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
-        // POST: Thêm mới dữ liệu
         [HttpPost]
-        public IActionResult Create(CategoryProduct model)
+        public async Task<IActionResult> Create(CategoryProduct model, IFormFile? uploadImage)
         {
-            if (ModelState.IsValid)
-            {
-                _context.CategoriesProducts.Add(model);
-                _context.SaveChanges();
+            if (uploadImage != null && uploadImage.Length > 0)
+                model.ImageUrl = await SaveImage(uploadImage);
 
-                return RedirectToAction("Index");
-            }
-
-            return View(model);
-        }
-
-        // =========================
-        // EDIT
-        // =========================
-
-        // GET: Hiển thị form sửa
-        [HttpGet]
-        public IActionResult Edit(int id)
-        {
-            // Tìm category theo id
-            var category = _context.CategoriesProducts.Find(id);
-
-            if (category == null)
-                return NotFound();
-
-            return View(category);
-        }
-
-        // POST: Cập nhật dữ liệu
-        [HttpPost]
-        public IActionResult Edit(CategoryProduct model)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.CategoriesProducts.Update(model);
-                _context.SaveChanges();
-
-                return RedirectToAction("Index");
-            }
-
-            return View(model);
-        }
-
-        // =========================
-        // DELETE
-        // =========================
-
-        public IActionResult Delete(int id)
-        {
-            // Tìm category theo id
-            var category = _context.CategoriesProducts.Find(id);
-
-            if (category != null)
-            {
-                // Xóa dữ liệu
-                _context.CategoriesProducts.Remove(category);
-
-                // Lưu xuống SQL Server
-                _context.SaveChanges();
-            }
-
+            _context.CategoriesProducts.Add(model);
+            _context.SaveChanges();
+            TempData["Success"] = "Thêm danh mục thành công!";
             return RedirectToAction("Index");
         }
 
-        // =========================
-        // DETAILS
-        // =========================
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var cat = _context.CategoriesProducts.Find(id);
+            if (cat == null) return NotFound();
+            return View(cat);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(CategoryProduct model, IFormFile? uploadImage)
+        {
+            if (uploadImage != null && uploadImage.Length > 0)
+            {
+                model.ImageUrl = await SaveImage(uploadImage);
+            }
+            else if (string.IsNullOrWhiteSpace(model.ImageUrl))
+            {
+                var old = await _context.CategoriesProducts.AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Id == model.Id);
+                model.ImageUrl = old?.ImageUrl;
+            }
+
+            _context.CategoriesProducts.Update(model);
+            _context.SaveChanges();
+            TempData["Success"] = "Cập nhật danh mục thành công!";
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var cat = _context.CategoriesProducts.Find(id);
+            if (cat != null)
+            {
+                _context.CategoriesProducts.Remove(cat);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
 
         public IActionResult Details(int id)
         {
-            var category = _context.CategoriesProducts.Find(id);
+            var cat = _context.CategoriesProducts.Find(id);
+            if (cat == null) return NotFound();
+            return View(cat);
+        }
 
-            if (category == null)
-                return NotFound();
-
-            return View(category);
+        private async Task<string> SaveImage(IFormFile file)
+        {
+            string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+            string fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            using var stream = new FileStream(Path.Combine(folder, fileName), FileMode.Create);
+            await file.CopyToAsync(stream);
+            return "/uploads/" + fileName;
         }
     }
 }

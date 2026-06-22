@@ -1,104 +1,84 @@
-﻿@model IEnumerable<CMS.Data.Entities.CategoryProduct>
-
+@model IEnumerable<CMS.Data.Entities.CategoryProduct>
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Danh mục sản phẩm";
 }
 
-<div class="container mt-4">
-
-    <!-- Tiêu đề + nút thêm -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2 class="text-primary fw-bold">
-            DANH SÁCH CATEGORY PRODUCT
-        </h2>
-
-        <a asp-action="Create" class="btn btn-success shadow-sm">
-            + Thêm mới
-        </a>
-
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold mb-0"><i class="bi bi-tags-fill text-primary me-2"></i>Danh mục sản phẩm</h4>
+        <small class="text-muted">Quản lý danh mục hiển thị trên trang chủ</small>
     </div>
+    <a asp-action="Create" class="btn btn-primary btn-sm px-3">
+        <i class="bi bi-plus-lg me-1"></i> Thêm danh mục
+    </a>
+</div>
 
-    <!-- Card -->
-    <div class="card shadow border-0">
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show py-2">
+        <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
-        <div class="card-body">
-
-            <table class="table table-hover table-bordered align-middle">
-
-                <thead class="table-dark text-center">
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-tags" style="font-size:3rem;opacity:.3"></i>
+        <p class="mt-3">Chưa có danh mục nào.</p>
+    </div>
+}
+else
+{
+    <div class="card card-custom">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
                     <tr>
-                        <th width="80">ID</th>
+                        <th width="60" class="text-center ps-3">ID</th>
+                        <th width="80">Ảnh</th>
                         <th>Tên danh mục</th>
                         <th>Mô tả</th>
-                        <th width="220">Chức năng</th>
+                        <th width="180" class="text-center">Thao tác</th>
                     </tr>
                 </thead>
-
                 <tbody>
-
-                    @if (Model.Any())
-                    {
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-
-                                <td class="text-center">
-                                    @item.Id
-                                </td>
-
-                                <td>
-                                    <strong>@item.Name</strong>
-                                </td>
-
-                                <td>
-                                    @item.Description
-                                </td>
-
-                                <td class="text-center">
-
-                                    <!-- Nút sửa -->
-                                    <a asp-action="Edit"
-                                       asp-route-id="@item.Id"
-                                       class="btn btn-warning btn-sm">
-                                        Sửa
-                                    </a>
-
-                                    <!-- Nút chi tiết -->
-                                    <a asp-action="Details"
-                                       asp-route-id="@item.Id"
-                                       class="btn btn-info btn-sm text-white">
-                                        Chi tiết
-                                    </a>
-
-                                    <!-- Nút xóa -->
-                                    <a asp-action="Delete"
-                                       asp-route-id="@item.Id"
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Bạn có chắc muốn xóa không?')">
-                                        Xóa
-                                    </a>
-
-                                </td>
-
-                            </tr>
-                        }
-                    }
-                    else
+                    @foreach (var item in Model)
                     {
                         <tr>
-                            <td colspan="4" class="text-center text-muted py-4">
-                                Chưa có dữ liệu category product
+                            <td class="text-center ps-3 text-muted small">@item.Id</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                {
+                                    <img src="@item.ImageUrl" alt="@item.Name"
+                                         style="width:56px;height:56px;object-fit:cover;border-radius:10px;border:1px solid #eee"
+                                         onerror="this.src='https://placehold.co/56x56?text=?'" />
+                                }
+                                else
+                                {
+                                    <div style="width:56px;height:56px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                }
+                            </td>
+                            <td><strong>@item.Name</strong></td>
+                            <td class="text-muted small">@(item.Description ?? "—")</td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id"
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('Xóa danh mục này?')">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </a>
                             </td>
                         </tr>
                     }
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
-
-</div>
+}

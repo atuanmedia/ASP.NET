@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CMS.Data.Entities
 {
@@ -19,6 +20,9 @@ namespace CMS.Data.Entities
         public string Name { get; set; }
 
         public string? Description { get; set; }
+
+        [MaxLength(1000)]
+        public string? ImageUrl { get; set; }
 
         // Quan hệ: Một danh mục có nhiều sản phẩm
         public virtual ICollection<Product>? Products { get; set; }

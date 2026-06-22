@@ -1,40 +1,85 @@
-﻿@model CMS.Data.Entities.CategoryProduct
-
+@model CMS.Data.Entities.CategoryProduct
 @{
     Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Sửa danh mục sản phẩm";
 }
 
-<h2 class="mb-4">Sửa danh mục sản phẩm</h2>
-
-<form asp-action="Edit" method="post">
-
-    <!-- Hidden Id -->
-    <input asp-for="Id" type="hidden" />
-
-    <div class="mb-3">
-        <label class="form-label">Tên danh mục</label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Mô tả</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-warning">
-        Cập nhật
-    </button>
-
-    <a asp-action="Index" class="btn btn-secondary">
-        Quay lại
+<div class="d-flex align-items-center mb-4 gap-3">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Quay lại
     </a>
+    <h4 class="fw-bold mb-0"><i class="bi bi-pencil-square text-primary me-2"></i>Chỉnh sửa danh mục</h4>
+</div>
 
-</form>
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card card-custom p-4">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tên danh mục <span class="text-danger">*</span></label>
+                    <input asp-for="Name" class="form-control" required />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Mô tả ngắn</label>
+                    <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Ảnh đại diện danh mục</label>
+                    <div class="border rounded-3 p-3 bg-light">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <div class="mb-3">
+                                <label class="small text-muted">Ảnh hiện tại:</label>
+                                <img id="previewImg" src="@Model.ImageUrl" alt="@Model.Name"
+                                     class="d-block rounded-3 mt-1 w-100"
+                                     style="max-height:180px;object-fit:cover"
+                                     onerror="this.src='https://placehold.co/600x400?text=No+Image'" />
+                            </div>
+                        }
+                        else
+                        {
+                            <img id="previewImg" src="" class="d-none rounded-3 mt-1 w-100"
+                                 style="max-height:180px;object-fit:cover" />
+                        }
+                        <label class="form-label small text-muted mb-1">Upload ảnh mới</label>
+                        <input type="file" name="uploadImage" class="form-control form-control-sm mb-2"
+                               accept="image/*" onchange="previewImage(this)" />
+                        <label class="form-label small text-muted mb-1">Hoặc nhập URL ảnh</label>
+                        <input asp-for="ImageUrl" class="form-control form-control-sm"
+                               placeholder="https://..." oninput="previewUrl(this.value)" />
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-floppy-fill me-1"></i> Lưu thay đổi
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<script>
+function previewImage(input) {
+    if (input.files?.[0]) {
+        const reader = new FileReader();
+        reader.onload = e => showPreview(e.target.result);
+        reader.readAsDataURL(input.files[0]);
     }
+}
+function previewUrl(url) { if (url.startsWith('http')) showPreview(url); }
+function showPreview(src) {
+    const img = document.getElementById('previewImg');
+    img.src = src; img.classList.remove('d-none');
+}
+</script>
 }

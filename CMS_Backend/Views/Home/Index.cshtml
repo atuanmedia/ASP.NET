@@ -1,24 +1,283 @@
-﻿@model IEnumerable<CMS.Data.Entities.Post>
+@model CMS.Backend.Controllers.DashboardViewModel
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Dashboard";
+}
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4 text-danger">TIN TỨC MỚI NHẤT</h2>
-    <div class="row">
-        @foreach (var item in Model)
-        {
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <img src="@item.ImageUrl" class="card-img-top" alt="Thumbnail">
-                    <div class="card-body">
-                        <span class="badge bg-primary mb-2">@item.Category.Name</span>
-                        <h5 class="card-title">@item.Title</h5>
-                        <p class="card-text text-truncate">@item.Content</p>
-                        <a href="/Post/Details/@item.Id" class="btn btn-outline-danger btn-sm">Đọc tiếp</a>
-                    </div>
-                    <div class="card-footer text-muted small">
-                        Ngày đăng: @item.CreatedDate.ToString("dd/MM/yyyy")
-                    </div>
+@section Styles {
+<style>
+    /* ── STAT CARDS ── */
+    .stat-card {
+        border: none; border-radius: 14px; padding: 24px 20px;
+        display: flex; align-items: center; gap: 18px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.07);
+        transition: transform .18s, box-shadow .18s;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.11); }
+
+    .stat-icon {
+        width: 56px; height: 56px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.6rem; flex-shrink: 0;
+    }
+    .stat-value { font-size: 2rem; font-weight: 800; line-height: 1; }
+    .stat-label { font-size: .8rem; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+
+    .bg-blue-soft  { background:#eff6ff; } .text-blue  { color:#2563eb; }
+    .bg-green-soft { background:#f0fdf4; } .text-green { color:#16a34a; }
+    .bg-amber-soft { background:#fffbeb; } .text-amber { color:#d97706; }
+    .bg-rose-soft  { background:#fff1f2; } .text-rose  { color:#e11d48; }
+
+    /* ── STATUS MINI-CARDS ── */
+    .status-card {
+        border-radius: 12px; padding: 16px 18px;
+        display: flex; align-items: center; gap: 12px;
+        box-shadow: 0 1px 6px rgba(0,0,0,.06); background:#fff;
+    }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .progress { height: 6px; border-radius: 99px; margin-top: 6px; }
+
+    /* ── SECTION CARD ── */
+    .section-card { border: none; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+    .section-card .card-header {
+        background: #fff; border-bottom: 1px solid #f1f5f9;
+        border-radius: 14px 14px 0 0 !important;
+        padding: 16px 20px; font-weight: 700; font-size: .95rem; color: #1e293b;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .section-card .card-body { padding: 0; }
+
+    /* ── TABLE ── */
+    .dash-table thead th {
+        background: #f8fafc; font-size: .76rem; text-transform: uppercase;
+        letter-spacing: .6px; color: #64748b; border: none; padding: 11px 16px;
+    }
+    .dash-table tbody td {
+        padding: 13px 16px; vertical-align: middle;
+        font-size: .87rem; border-color: #f1f5f9;
+    }
+    .dash-table tbody tr:hover { background: #f8fafc; }
+
+    .badge-pending  { background:#fef3c7; color:#b45309; }
+    .badge-shipping { background:#dbeafe; color:#1d4ed8; }
+    .badge-done     { background:#dcfce7; color:#15803d; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { margin-bottom: 28px; }
+    .page-header h1 { font-size: 1.55rem; font-weight: 800; color: #0f172a; margin: 0; }
+    .page-header p  { color: #64748b; font-size: .87rem; margin: 4px 0 0; }
+</style>
+}
+
+<!-- ═══ PAGE HEADER ═══ -->
+<div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+        <h1><i class="bi bi-grid-1x2-fill me-2 text-primary"></i>Tổng quan</h1>
+        <p>Xin chào, <strong>@(User.FindFirst("FullName")?.Value ?? "Admin")</strong> — @DateTime.Now.ToString("dddd, dd/MM/yyyy")</p>
+    </div>
+    <a asp-controller="Post" asp-action="Create" class="btn btn-primary px-4 py-2 fw-semibold">
+        <i class="bi bi-plus-lg me-1"></i> Viết bài mới
+    </a>
+</div>
+
+<!-- ═══ 4 STAT CARDS ═══ -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card bg-white">
+            <div class="stat-icon bg-blue-soft text-blue"><i class="bi bi-box-seam-fill"></i></div>
+            <div>
+                <div class="stat-value text-blue">@Model.TotalProducts</div>
+                <div class="stat-label">Sản phẩm</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card bg-white">
+            <div class="stat-icon bg-green-soft text-green"><i class="bi bi-receipt-cutoff"></i></div>
+            <div>
+                <div class="stat-value text-green">@Model.TotalOrders</div>
+                <div class="stat-label">Đơn hàng</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card bg-white">
+            <div class="stat-icon bg-amber-soft text-amber"><i class="bi bi-people-fill"></i></div>
+            <div>
+                <div class="stat-value text-amber">@Model.TotalCustomers</div>
+                <div class="stat-label">Khách hàng</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card bg-white">
+            <div class="stat-icon bg-rose-soft text-rose"><i class="bi bi-newspaper"></i></div>
+            <div>
+                <div class="stat-value text-rose">@Model.TotalPosts</div>
+                <div class="stat-label">Bài viết</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ ORDER STATUS ═══ -->
+<div class="row g-3 mb-4">
+    @{
+        int total = Model.TotalOrders > 0 ? Model.TotalOrders : 1;
+    }
+    <div class="col-md-4">
+        <div class="status-card">
+            <div class="status-dot" style="background:#f59e0b"></div>
+            <div class="flex-grow-1">
+                <div class="fw-semibold" style="font-size:.85rem;color:#92400e">Chờ duyệt</div>
+                <div class="fw-bold fs-4">@Model.OrdersPending</div>
+                <div class="progress">
+                    <div class="progress-bar bg-warning" style="width:@(Model.OrdersPending * 100 / total)%"></div>
                 </div>
             </div>
-        }
+            <a asp-controller="Order" asp-action="Index" class="btn btn-sm btn-outline-warning px-3">Xem</a>
+        </div>
     </div>
+    <div class="col-md-4">
+        <div class="status-card">
+            <div class="status-dot" style="background:#3b82f6"></div>
+            <div class="flex-grow-1">
+                <div class="fw-semibold" style="font-size:.85rem;color:#1e40af">Đang giao</div>
+                <div class="fw-bold fs-4">@Model.OrdersShipping</div>
+                <div class="progress">
+                    <div class="progress-bar bg-primary" style="width:@(Model.OrdersShipping * 100 / total)%"></div>
+                </div>
+            </div>
+            <a asp-controller="Order" asp-action="Index" class="btn btn-sm btn-outline-primary px-3">Xem</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="status-card">
+            <div class="status-dot" style="background:#22c55e"></div>
+            <div class="flex-grow-1">
+                <div class="fw-semibold" style="font-size:.85rem;color:#15803d">Hoàn thành</div>
+                <div class="fw-bold fs-4">@Model.OrdersDone</div>
+                <div class="progress">
+                    <div class="progress-bar bg-success" style="width:@(Model.OrdersDone * 100 / total)%"></div>
+                </div>
+            </div>
+            <a asp-controller="Order" asp-action="Index" class="btn btn-sm btn-outline-success px-3">Xem</a>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ RECENT ORDERS + RECENT POSTS ═══ -->
+<div class="row g-4">
+
+    <!-- Đơn hàng gần đây -->
+    <div class="col-lg-7">
+        <div class="card section-card h-100">
+            <div class="card-header">
+                <span><i class="bi bi-clock-history me-2 text-primary"></i>Đơn hàng gần đây</span>
+                <a asp-controller="Order" asp-action="Index" class="btn btn-sm btn-light fw-semibold">
+                    Xem tất cả <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <table class="table dash-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>#ID</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Số SP</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.RecentOrders.Any())
+                        {
+                            <tr><td colspan="5" class="text-center text-muted py-5">Chưa có đơn hàng nào</td></tr>
+                        }
+                        @foreach (var order in Model.RecentOrders)
+                        {
+                            <tr>
+                                <td><span class="text-muted fw-semibold">#@order.Id</span></td>
+                                <td>
+                                    <div class="fw-semibold">@(order.Customer?.FullName ?? "—")</div>
+                                    <div class="text-muted" style="font-size:.76rem">@(order.Customer?.Email ?? "")</div>
+                                </td>
+                                <td class="text-muted">@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <span class="badge bg-light text-secondary border fw-semibold">
+                                        @(order.OrderDetails?.Count ?? 0) sp
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (order.Status == 0)
+                                    {
+                                        <span class="badge badge-pending rounded-pill px-3 py-2">Chờ duyệt</span>
+                                    }
+                                    else if (order.Status == 1)
+                                    {
+                                        <span class="badge badge-shipping rounded-pill px-3 py-2">Đang giao</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-done rounded-pill px-3 py-2">Hoàn thành</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bài viết gần đây -->
+    <div class="col-lg-5">
+        <div class="card section-card h-100">
+            <div class="card-header">
+                <span><i class="bi bi-newspaper me-2" style="color:#e11d48"></i>Bài viết gần đây</span>
+                <a asp-controller="Post" asp-action="Index" class="btn btn-sm btn-light fw-semibold">
+                    Xem tất cả <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                @if (!Model.RecentPosts.Any())
+                {
+                    <div class="text-center text-muted py-5">Chưa có bài viết nào</div>
+                }
+                @foreach (var post in Model.RecentPosts)
+                {
+                    <div class="d-flex align-items-start gap-3 p-3"
+                         style="border-bottom:1px solid #f1f5f9">
+                        @if (!string.IsNullOrEmpty(post.ImageUrl))
+                        {
+                            <img src="@post.ImageUrl" alt=""
+                                 style="width:50px;height:50px;object-fit:cover;border-radius:10px;flex-shrink:0" />
+                        }
+                        else
+                        {
+                            <div style="width:50px;height:50px;border-radius:10px;background:#f1f5f9;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                                <i class="bi bi-image text-muted"></i>
+                            </div>
+                        }
+                        <div class="flex-grow-1 overflow-hidden">
+                            <div class="fw-semibold text-truncate" style="font-size:.87rem">@post.Title</div>
+                            <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
+                                <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size:.71rem">
+                                    @(post.Category?.Name ?? "—")
+                                </span>
+                                <span class="text-muted" style="font-size:.74rem">
+                                    <i class="bi bi-calendar3 me-1"></i>@post.CreatedDate.ToString("dd/MM/yyyy")
+                                </span>
+                            </div>
+                        </div>
+                        <a asp-controller="Post" asp-action="Edit" asp-route-id="@post.Id"
+                           class="btn btn-sm btn-light flex-shrink-0" title="Sửa bài">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
 </div>
